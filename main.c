@@ -31,9 +31,13 @@ void limpar_buffer()
         ;
 }
 
+// Essa função lê e retorna a opção escolhida pelo usuário
+// Possui medidas de segurança para verificar se o input é válido
+// Se o input é inválido, ela permanece em loop, evitando continuação inadequada
+// IMPORTANTE: ela sempre limpa o buffer após cada entrada
 int obter_opcao()
 {
-    int opc; // Variável para armazer a opção selecionada
+    int opc; // Variável para armazenar a opção selecionada
     int scanf_retorno; // Variável para checar o retorno do scanf
 
     while (1) {
