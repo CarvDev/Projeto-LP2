@@ -15,7 +15,7 @@ int main()
         switch (opcao) {
         case 1:
             // Gerenciar pacientes
-            printf("[Opção selecionada: %d]\n\n", opcao);
+            modulo_pacientes();
             break;
 
         case 2:
