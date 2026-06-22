@@ -10,6 +10,10 @@ void imprimir_cursor();
 // consumir o \n, deixando o buffer limpo
 void limpar_buffer();
 
+// Função auxiliar para remover o \n numa string
+// Limpa o buffer caso necessário
+void remover_quebra_linha(char *string);
+
 // Essa função lê e retorna a opção escolhida pelo usuário
 // Possui medidas de segurança para verificar se o input é válido
 // Se o input é inválido, ela permanece em loop, evitando continuação inadequada

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 void imprimir_menu()
 {
@@ -16,6 +17,22 @@ void limpar_buffer()
 {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
+}
+
+void remover_quebra_linha(char *string) {
+	// Busca o caractere \n na string
+	int posicao = strcspn(string, "\n");
+	char c = string[posicao];
+
+	// Se c for \n, o remove
+	if (c == '\n') {
+		string[posicao] = '\0';
+		return;
+	} 
+	
+	// Se não encontrou \n, significa que a entrada foi truncada
+	// e o resto da linha (lixo) ainda está no buffer do teclado.
+	limpar_buffer();
 }
 
 int obter_opcao()
