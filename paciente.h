@@ -11,7 +11,7 @@ typedef struct {
  * calcula a ID do novo usuário, incrementa os registros de quantidade e
  * de última ID e retorna esse novo paciente
  */
-Paciente cadastrar_paciente(int *qtdPacientes, int *ultimaIdPaciente);
+Paciente cadastrar_paciente();
 
 // Imprime os dados do paciente passado como argumento
 void imprimir_paciente(Paciente paciente);
