@@ -2,6 +2,7 @@
 #include "auxiliar.h"
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define MAX_PACIENTES 100
@@ -13,12 +14,14 @@ int ultimaIdPaciente = 0; // Para controle numérico das IDs
 static void imprimir_menu_pacientes() {
     printf("------ PACIENTES ------\n"
         "[Pacientes Cadastrados: %d]\n\n"
+
         "[Digite a opção desejada]\n"
         "1. Cadastrar paciente\n"
-        "2. Visualizar paciente\n"
-        "3. Modificar paciente\n"
-        "4. Remover paciente\n"
-        "5. Voltar\n",
+        "2. Visualizar todos os pacientes\n"
+        "3. Pesquisar paciente\n"
+        "4. Modificar paciente\n"
+        "5. Remover paciente\n"
+        "6. Voltar\n",
     qtdPacientes);
 }
 
@@ -60,9 +63,7 @@ Paciente cadastrar_paciente() {
     while (1) {
         printf("Idade: ");
 
-        if (scanf(" %d", &paciente.idade) == 1) {
-            break;
-        }
+        if (scanf(" %d", &paciente.idade) == 1) break;
         limpar_buffer();
         fprintf(stderr, "[ERRO] Por favor, tente novamente\n");
     } 
@@ -75,8 +76,13 @@ Paciente cadastrar_paciente() {
         printf("Gênero (F/M): ");
 
         if (fgets(generoTemp, sizeof(generoTemp), stdin)) {
-            paciente.genero = toupper(generoTemp[0]);
             remover_quebra_linha(generoTemp);
+            paciente.genero = toupper(generoTemp[0]);
+
+            if (paciente.genero != 'M' && paciente.genero != 'F') {
+                fprintf(stderr, "[ERRO] Gênero Inválido. Por favor, tente novamente\n");
+                continue;
+            }
             break;
         }
         fprintf(stderr, "[ERRO] Por favor, tente novamente\n");
@@ -87,6 +93,7 @@ Paciente cadastrar_paciente() {
         printf("Peso (kg): ");
         
         if (scanf(" %f", &paciente.peso) == 1) break;
+        limpar_buffer();
         fprintf(stderr, "[ERRO] Por favor, tente novamente\n");
     }
     limpar_buffer();
@@ -131,20 +138,19 @@ Paciente cadastrar_paciente() {
             break;
 
             erro:
-            fprintf(stderr, "[ERRO: Tipo Sanguíneo Inválido] Por favor, tente novamente\n");
+            fprintf(stderr, "[ERRO] Tipo Sanguíneo Inválido. Por favor, tente novamente\n");
             continue;
         }
         fprintf(stderr, "[ERRO] Por favor, tente novamente\n");
     }
 
     // Imprimindo dados lidos
-    char resposta;
     printf("\n");
     imprimir_paciente(paciente);
-    printf("Os dados conferem? (s/n) \n");
+    printf("[Os dados conferem? (S/n)]\n");
     imprimir_cursor();
-    scanf(" %c", &resposta);
-    limpar_buffer();
+    char resposta = getchar();
+    if (resposta != '\n') limpar_buffer();
     if (toupper(resposta) == 'N') return cadastrar_paciente();
 
     (qtdPacientes)++;
@@ -152,8 +158,34 @@ Paciente cadastrar_paciente() {
     return paciente;
 }
 
+int pesquisar_paciente(int inicio, int fim, char idDesejada[]) {
+
+    if (inicio <= fim) {
+        int meio = inicio + (fim - inicio) /2;
+        int resultadoComparacao = strcmp(pacientes[meio].id, idDesejada);
+
+        // ID maior que a do paciente do meio
+        if (resultadoComparacao == 0) {
+            return meio;
+        }
+
+        // ID procurada é menor que a do meio (busca na metade esquerda)
+        if (resultadoComparacao > 0) {
+            return pesquisar_paciente(inicio, meio - 1, idDesejada);
+        }
+
+        // ID procurada é maior que a do meio (busca na metade direita)
+        return pesquisar_paciente(meio + 1, fim, idDesejada);
+    }
+
+    // Caso base: Elemento não encontrado (inicio > fim)
+    return -1;
+}
+
 void modulo_pacientes() {
     int opcao = 0;
+    char idPesquisa[6];
+
 
     // Iniciando interação com usuário
     do {
@@ -168,21 +200,55 @@ void modulo_pacientes() {
             break;
 
         case 2:
-            // Visualizar
-            printf("[Opção selecionada: %d]\n\n", opcao);
+            // Visualizar todos
+            printf("\n-- INÍCIO DA LISTA --\n");
+            for (int i = 0; i < qtdPacientes; i++) {
+                imprimir_paciente(pacientes[i]);
+            }
+            printf("-- FIM DA LISTA --\n\n");
             break;
 
         case 3:
+            // Pesquisar
+            printf("\n[Informe a ID do paciente a ser pesquisada]\n");
+            imprimir_cursor();
+            if (!fgets(idPesquisa, sizeof(idPesquisa), stdin)) {
+                fprintf(stderr, "[ERRO] Não foi possível ler a ID informada\n");
+                break;
+            }
+            remover_quebra_linha(idPesquisa);
+
+            // Tratamento inteligente da ID informada:
+            // ignora o primeiro digito (P) e pega apenas o valor 
+            // numérico, depois volta ao formato correto de string
+            int rawId = atoi(idPesquisa + isalpha(idPesquisa[0]? 1 : 0));
+            formatar_id_paciente(rawId, idPesquisa, sizeof(idPesquisa));
+
+            // Faz a pesquisa com a ID informada
+            int indicePaciente = pesquisar_paciente(0, qtdPacientes, idPesquisa);
+
+            // Caso de erro
+            if (indicePaciente < 0) {
+                fprintf(stderr, "[AVISO] Paciente não encontrado\n\n");
+                break; 
+            }
+            // Caso de sucesso
+            printf("\n -- PACIENTE ENCONTRADO --\n");
+            imprimir_paciente(pacientes[indicePaciente]);
+            printf("\n");
+            break;
+
+        case 4:
             // Modificar
             printf("[Opção selecionada: %d]\n\n", opcao);
             break;
 
-        case 4:
+        case 5:
             // Remover
             printf("[Opção selecionada: %d]\n\n", opcao);
             break;
 
-        case 5:
+        case 6:
             // Voltar
             printf("\n");
             break;
@@ -192,6 +258,7 @@ void modulo_pacientes() {
             printf("[Opção inválida]\nTente novamente...\n\n");
             break;
         }
-    } while (opcao != 5);
-    // Se a opção 5 for selecionada quebramos o laço
+    } while (opcao != 6);
+    // Se a opção 6 for selecionada quebramos o laço
 }
+
