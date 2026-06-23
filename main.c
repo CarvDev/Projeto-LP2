@@ -20,6 +20,8 @@ int main()
 
         case 2:
             // Gerenciar doutores
+
+            modulo_medicos();
             printf("[Opção selecionada: %d]\n\n", opcao);
             break;
 
