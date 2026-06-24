@@ -1,3 +1,6 @@
+#ifndef PACIENTE_H
+#define PACIENTE_H
+
 typedef struct {
     char id[5];
     char nome[50];
@@ -6,6 +9,12 @@ typedef struct {
     float peso;
     char tipoSanguineo[5];
 } Paciente;
+
+// Exportando as variáveis globais
+extern Paciente pacientes[];
+extern int qtdPacientes;
+extern int ultimaIdPaciente;
+extern const char caminhoArqPacientes[];
 
 /* Solicita ao usuário informações para o cadastro de um novo paciente,
  * calcula a ID do novo usuário, incrementa os registros de quantidade e
@@ -24,3 +33,4 @@ int pesquisar_paciente(int inicio, int fim, char idDesejada[]);
 // Agrupa a execução das principais funções de clientes
 void modulo_pacientes();
 
+#endif

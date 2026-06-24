@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/c,visualstudiocode,linux,windows,codeblocks,vim
 # Edit at https://www.toptal.com/developers/gitignore?templates=c,visualstudiocode,linux,windows,codeblocks,vim
 
+### Custom ###
+# Para os arquivos de dados do projeto
+dados/*
+
 ### C ###
 # Prerequisites
 *.d

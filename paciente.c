@@ -10,6 +10,7 @@
 Paciente pacientes[MAX_PACIENTES];
 int qtdPacientes = 0;
 int ultimaIdPaciente = 0; // Para controle numérico das IDs
+const char caminhoArqPacientes[] = "dados/pacientes.bin";
 
 static void imprimir_menu_pacientes() {
     printf("------ PACIENTES ------\n"
@@ -149,8 +150,7 @@ Paciente cadastrar_paciente() {
     imprimir_paciente(paciente);
     printf("[Os dados conferem? (S/n)]\n");
     imprimir_cursor();
-    char resposta = getchar();
-    if (resposta != '\n') limpar_buffer();
+    char resposta = obter_opcao();
     if (toupper(resposta) == 'N') return cadastrar_paciente();
 
     (qtdPacientes)++;
@@ -164,7 +164,7 @@ int pesquisar_paciente(int inicio, int fim, char idDesejada[]) {
         int meio = inicio + (fim - inicio) /2;
         int resultadoComparacao = strcmp(pacientes[meio].id, idDesejada);
 
-        // ID maior que a do paciente do meio
+        // ID igual a do paciente do meio
         if (resultadoComparacao == 0) {
             return meio;
         }
@@ -183,9 +183,8 @@ int pesquisar_paciente(int inicio, int fim, char idDesejada[]) {
 }
 
 void modulo_pacientes() {
-    int opcao = 0;
+    char opcao = 0;
     char idPesquisa[6];
-
 
     // Iniciando interação com usuário
     do {
@@ -194,12 +193,12 @@ void modulo_pacientes() {
         opcao = obter_opcao();
 
         switch (opcao) {
-        case 1:
+        case '1':
             // Cadastrar
             pacientes[qtdPacientes] = cadastrar_paciente();
             break;
 
-        case 2:
+        case '2':
             // Visualizar todos
             printf("\n-- INÍCIO DA LISTA --\n");
             for (int i = 0; i < qtdPacientes; i++) {
@@ -208,7 +207,7 @@ void modulo_pacientes() {
             printf("-- FIM DA LISTA --\n\n");
             break;
 
-        case 3:
+        case '3':
             // Pesquisar
             printf("\n[Informe a ID do paciente a ser pesquisada]\n");
             imprimir_cursor();
@@ -221,11 +220,11 @@ void modulo_pacientes() {
             // Tratamento inteligente da ID informada:
             // ignora o primeiro digito (P) e pega apenas o valor 
             // numérico, depois volta ao formato correto de string
-            int rawId = atoi(idPesquisa + isalpha(idPesquisa[0]? 1 : 0));
+            int rawId = atoi(idPesquisa + (isalpha(idPesquisa[0]) ? 1 : 0));
             formatar_id_paciente(rawId, idPesquisa, sizeof(idPesquisa));
 
             // Faz a pesquisa com a ID informada
-            int indicePaciente = pesquisar_paciente(0, qtdPacientes, idPesquisa);
+            int indicePaciente = pesquisar_paciente(0, qtdPacientes - 1, idPesquisa);
 
             // Caso de erro
             if (indicePaciente < 0) {
@@ -238,27 +237,27 @@ void modulo_pacientes() {
             printf("\n");
             break;
 
-        case 4:
+        case '4':
             // Modificar
-            printf("[Opção selecionada: %d]\n\n", opcao);
+            printf("[Opção selecionada: %c]\n\n", opcao);
             break;
 
-        case 5:
+        case '5':
             // Remover
-            printf("[Opção selecionada: %d]\n\n", opcao);
+            printf("[Opção selecionada: %c]\n\n", opcao);
             break;
 
-        case 6:
+        case '6':
             // Voltar
             printf("\n");
             break;
 
         default:
             // Caso de erro (opção inválida)
-            printf("[Opção inválida]\nTente novamente...\n\n");
+            printf("[ERRO] Opção inválida. Tente novamente...\n\n");
             break;
         }
-    } while (opcao != 6);
+    } while (opcao != '6');
     // Se a opção 6 for selecionada quebramos o laço
 }
 

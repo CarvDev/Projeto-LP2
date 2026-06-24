@@ -11,6 +11,12 @@ typedef struct {
     char especializacao[50];
 } Medico;
 
+// Exportando as variáveis globais
+extern Medico medicos[];
+extern int qtdMedicos;
+extern int ultimaIdMedico; 
+extern const char caminhoArqMedicos[];
+
 /* Solicita ao usuário informações para o cadastro de um novo médico,
  * calcula a ID do novo usuário, incrementa os registros de quantidade e
  * de última ID e retorna esse novo médico
