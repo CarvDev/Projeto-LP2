@@ -44,4 +44,10 @@ void gravar_arquivo(const char *nomeArquivo, int quantidadeDados, void *vetorDad
 // Tenta excluir o arquivo passado como argumento
 void remover_arquivo(char *nomeArquivo);
 
+/**
+ * Remove um item de um vetor genérico mantendo a ordenação.
+ * Retorna o ponteiro para o vetor em caso de sucesso, ou NULL se o índice for inválido.
+ */
+void *remover_item(void *vetor, int *tamanhoVetor, size_t tamanhoDado, int indiceItem);
+
 #endif

@@ -117,9 +117,12 @@ int pesquisar_medico(int inicio, int fim, char idDesejada[]) {
 void modulo_medicos() {
     char opcao = 0;
     char idPesquisa[6];
+    int rawId;
+    int indiceMedico;
 
     // Iniciando interação com usuário
     do {
+        printf("\n");
         imprimir_menu_medicos();
         imprimir_cursor();
         opcao = obter_opcao();
@@ -136,12 +139,12 @@ void modulo_medicos() {
             for (int i = 0; i < qtdMedicos; i++) {
                 imprimir_medico(medicos[i]);
             }
-            printf("-- FIM DA LISTA --\n\n");
+            printf("-- FIM DA LISTA --\n");
             break;
 
         case '3':
             // Pesquisar
-            printf("\n[Informe a ID do médico a ser pesquisada]\n");
+            printf("\n[Informe a ID do médico a ser pesquisado]\n");
             imprimir_cursor();
             if (!fgets(idPesquisa, sizeof(idPesquisa), stdin)) {
                 fprintf(stderr, "[ERRO] Não foi possível ler a ID informada\n");
@@ -152,41 +155,57 @@ void modulo_medicos() {
             // Tratamento inteligente da ID informada:
             // ignora o primeiro digito (M) e pega apenas o valor 
             // numérico, depois volta ao formato correto de string
-            int rawId = atoi(idPesquisa + (isalpha(idPesquisa[0]) ? 1 : 0));
+            rawId = atoi(idPesquisa + (isalpha(idPesquisa[0]) ? 1 : 0));
             formatar_id_medico(rawId, idPesquisa, sizeof(idPesquisa));
 
             // Faz a pesquisa com a ID informada
-            int indiceMedico = pesquisar_medico(0, qtdMedicos - 1, idPesquisa);
+            indiceMedico = pesquisar_medico(0, qtdMedicos - 1, idPesquisa);
 
             // Caso de erro
             if (indiceMedico < 0) {
-                fprintf(stderr, "[AVISO] Médico não encontrado\n\n");
+                fprintf(stderr, "[AVISO] Médico não encontrado\n");
                 break; 
             }
             // Caso de sucesso
             printf("\n -- MÉDICO ENCONTRADO --\n");
             imprimir_medico(medicos[indiceMedico]);
-            printf("\n");
             break;
 
         case '4':
             // Modificar
-            printf("[Opção selecionada: %c]\n\n", opcao);
+            printf("[Opção selecionada: %c]\n", opcao);
             break;
 
         case '5':
             // Remover
-            printf("[Opção selecionada: %c]\n\n", opcao);
+            printf("\n[Informe a ID do médico a ser removido]\n");
+            imprimir_cursor();
+            if (!fgets(idPesquisa, sizeof(idPesquisa), stdin)) {
+                fprintf(stderr, "[ERRO] Não foi possível ler a ID informada\n");
+                break;
+            }
+            // Lógica de pesquisa
+            remover_quebra_linha(idPesquisa);
+            rawId = atoi(idPesquisa + (isalpha(idPesquisa[0]) ? 1 : 0));
+            formatar_id_medico(rawId, idPesquisa, sizeof(idPesquisa));
+            indiceMedico = pesquisar_medico(0, qtdMedicos - 1, idPesquisa);
+
+            // Remove o médico
+            if (remover_item(medicos, &qtdMedicos, sizeof(Medico), indiceMedico) == NULL) {
+                fprintf(stderr, "[ERRO] O médico solicitado não existe\n");
+                break;
+            }
+
+            printf("[%s Removido]\n", idPesquisa);
             break;
 
         case '6':
             // Voltar
-            printf("\n");
             break;
 
         default:
             // Caso de erro (opção inválida)
-            printf("[ERRO] Opção inválida. Tente novamente...\n\n");
+            printf("[ERRO] Opção inválida. Tente novamente...\n");
             break;
         }
     } while (opcao != '6');

@@ -1,3 +1,5 @@
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include "auxiliar.h"
@@ -116,4 +118,28 @@ void remover_arquivo(char *nomeArquivo) {
     } 
     
     printf("[AVISO] Arquivo '%s' removido.\n", nomeArquivo);
+}
+
+void *remover_item(void *vetor, int *tamanhoVetor, size_t tamanhoDado, int indiceItem) {
+    // Validação de segurança dos limites do vetor
+    if (indiceItem < 0 || indiceItem >= *tamanhoVetor) {
+        return NULL;
+    }
+
+    // Calculando quantos elementos precisam ser deslocados
+    int itensParaMover = *tamanhoVetor - indiceItem - 1;
+
+    if (itensParaMover > 0) {
+        // Convertemos para uint8_t* (1 byte) para permitir aritmética de ponteiros 
+        uint8_t *ptrGenerico = (uint8_t *)vetor;
+
+        // Calculamos os endereços de memória exatos baseados no tamanho do dado
+        uint8_t *destino = ptrGenerico + (indiceItem * tamanhoDado);
+        uint8_t *origem  = destino + tamanhoDado;
+
+        memmove(destino, origem, itensParaMover * tamanhoDado);
+    }
+
+    (*tamanhoVetor)--;
+    return vetor;
 }
