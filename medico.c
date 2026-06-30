@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_MEDICOS 100
+
 Medico medicos[MAX_MEDICOS];
 int qtdMedicos = 0;
 int ultimaIdMedico = 0; // Para controle numérico das IDs
@@ -205,7 +207,7 @@ void modulo_medicos() {
 
         default:
             // Caso de erro (opção inválida)
-            printf("[ERRO] Opção inválida. Tente novamente...\n");
+            printf("[ERRO] Opção inválida. Tente novamente...\n\n");
             break;
         }
     } while (opcao != '6');
