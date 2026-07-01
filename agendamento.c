@@ -75,18 +75,7 @@ void imprimir_agendamento(Agendamento *agendamento) {
     return;
 }
 
-static void cadastrar_agendamento(Agendamento *lista) {
-    Agendamento *novo = malloc(sizeof(Agendamento));
-    if (novo == NULL) {
-        fprintf(stderr, "[ERRO] Não foi possível alocar memória para o agendamento");
-        return;
-    }
-
-    printf("---- NOVO AGENDAMENTO ----\n");
-
-    // ID (definida automaticamente)
-    formatar_id(qtdAgendamentos + 1, 'A', novo->id, sizeof(novo->id));
-
+Horario solicitar_horario() {
     // Data 
     Horario horario;
     while (1) {
@@ -123,6 +112,23 @@ static void cadastrar_agendamento(Agendamento *lista) {
     }
     limpar_buffer();
 
+    return horario;
+}
+
+static void cadastrar_agendamento(Agendamento *lista) {
+    Agendamento *novo = malloc(sizeof(Agendamento));
+    if (novo == NULL) {
+        fprintf(stderr, "[ERRO] Não foi possível alocar memória para o agendamento");
+        return;
+    }
+
+    printf("---- NOVO AGENDAMENTO ----\n");
+
+    // ID (definida automaticamente)
+    formatar_id(qtdAgendamentos + 1, 'A', novo->id, sizeof(novo->id));
+
+    // Data 
+    Horario horario = solicitar_horario();
     novo->timestamp = obter_timestamp(horario);
 
     solicitar_id_inteligente(novo->idPaciente, 'P', sizeof(novo->idPaciente), "ID do Paciente: ");
@@ -145,16 +151,24 @@ static void cadastrar_agendamento(Agendamento *lista) {
     char resposta = obter_opcao();
     if (maiusculo(resposta) == 'N') goto erro;
 
-    // Varrendo a lista
+    // Percorre a lista avaliando o 'timestamp' do próximo nó para encontrar
+    // o ponto de inserção correto e manter a lista cronologicamente ordenada.
     Agendamento *atual = lista;
-    while(atual->prox != NULL && atual->timestamp <= novo->timestamp) {
+    while(atual->prox != NULL && atual->prox->timestamp <= novo->timestamp) {
         atual = atual->prox;
     } 
 
-    // Inserindo o novo agendamento na posição ideal
+    // Inserindo o novo agendamento na posição ideal e refazendo as ligações
     novo->anterior = atual;
     novo->prox = atual->prox;
+    
+    // Garante que o nó seguinte (se existir) aponte de volta para o novo nó,
+    // mantendo a integridade da lista duplamente encadeada.
+    if (atual->prox != NULL) {
+        atual->prox->anterior = novo;
+    }
     atual->prox = novo;
+    
     (qtdAgendamentos)++;
     (ultimaIdAgendamento)++;
     return;
@@ -180,6 +194,122 @@ Agendamento *pesquisar_agendamento(Agendamento *lista, char idDesejada[]) {
 
     // Se não encontrar nenhum resultado, retorna nulo
     return NULL;
+}
+
+Agendamento *remover_agendamento(Agendamento *agendamento) {
+    // Garante que o nó recebido não é nulo
+    if (agendamento == NULL) {
+        return NULL;
+    }
+
+    // Isola o nó atual ajustando os ponteiros dos vizinhos
+    agendamento->anterior->prox = agendamento->prox;
+    if (agendamento->prox != NULL) {
+        agendamento->prox->anterior = agendamento->anterior;
+    }
+
+    // Libera a memória do nó isolado
+    free(agendamento);
+
+    // Retorna NULL para indicar que o objeto não é mais válido
+    return NULL;
+}
+
+void editar_dados_agendamento(Agendamento *agendamento, Agendamento *lista) {
+    char opcao;
+    char novoId[6];
+    int indice;
+
+    do {
+        printf("\n--- EDITANDO AGENDAMENTO ---\n");
+        imprimir_agendamento(agendamento);
+
+        printf("\n[O que deseja alterar?]\n");
+        printf("1. Médico\n");
+        printf("2. Paciente\n");
+        printf("3. Horário\n");
+        printf("0. Concluir edição\n");
+        imprimir_cursor();
+
+        opcao = obter_opcao();
+
+        switch (opcao) {
+            case '1':
+                solicitar_id_inteligente(novoId, 'M', sizeof(novoId), "ID do novo Médico: ");
+                indice = pesquisar_medico(0, qtdMedicos - 1, novoId);
+                
+                // Previne a associação de um médico inexistente
+                if (indice == -1) {
+                    fprintf(stderr, "[ERRO] O Médico não existe\n");
+                    break;
+                }
+
+                strcpy(agendamento->idMedico, novoId);
+                printf("[AVISO] Médico atualizado com sucesso.\n");
+                break;
+            
+            case '2':
+                solicitar_id_inteligente(novoId, 'P', sizeof(novoId), "ID do novo Paciente: ");
+                indice = pesquisar_paciente(0, qtdPacientes - 1, novoId);
+
+                // Previne a associação de um paciente inexistente
+                if (indice == -1) {
+                    fprintf(stderr, "[ERRO] O Paciente não existe\n");
+                    break;
+                }
+
+                strcpy(agendamento->idPaciente, novoId);
+                printf("[AVISO] Paciente atualizado com sucesso.\n");
+                break;
+
+            case '3':
+                printf("-- Novo Horário --\n");
+                Horario novoHorario = solicitar_horario();
+                time_t novoTimestamp = obter_timestamp(novoHorario);
+
+                // Otimização: Evita realocação e reordenação desnecessária
+                if (novoTimestamp == agendamento->timestamp) {
+                    printf("[AVISO] O horário é o mesmo. Nenhuma alteração foi feita.\n");
+                    break;
+                }
+
+                // Isola o nó atual ajustando os ponteiros dos vizinhos
+                agendamento->anterior->prox = agendamento->prox;
+                if (agendamento->prox != NULL) {
+                    agendamento->prox->anterior = agendamento->anterior;
+                }
+
+                // Atualiza o dado temporal
+                agendamento->timestamp = novoTimestamp;
+
+                // Percorre a lista avaliando o 'timestamp' do próximo nó para encontrar
+                // o ponto de inserção correto e manter a lista cronologicamente ordenada.
+                Agendamento *busca = lista;
+                while(busca->prox != NULL && busca->prox->timestamp <= agendamento->timestamp) {
+                    busca = busca->prox;
+                } 
+
+                // Refaz as ligações inserindo o nó isolado na nova posição descoberta
+                agendamento->anterior = busca;
+                agendamento->prox = busca->prox;
+                
+                if (busca->prox != NULL) {
+                    busca->prox->anterior = agendamento;
+                }
+                busca->prox = agendamento;
+
+                printf("[AVISO] Horário atualizado com sucesso.\n");
+                break;
+            
+            case '0':
+                printf("[Edição Concluída]\n");
+                break;
+
+            default:
+                fprintf(stderr, "[ERRO] Opção inválida. tente novamente...\n");
+                break;
+        }
+    } while (opcao != '0');
 }
 
 void modulo_agendamentos() {
@@ -214,7 +344,7 @@ void modulo_agendamentos() {
         case '3':
             // Pesquisa
             solicitar_id_inteligente(idPesquisa, 'A', sizeof(idPesquisa),
-                "[Informe a ID do atendimento a ser pesquisado]");
+                "\n[Informe a ID do atendimento a ser pesquisado]\n> ");
             agendamentoEncontrado = pesquisar_agendamento(listaAgendamentos, idPesquisa);
 
             // Caso de erro 
@@ -229,7 +359,16 @@ void modulo_agendamentos() {
 
         case '4':
             // Modificar
+            solicitar_id_inteligente(idPesquisa, 'A', sizeof(idPesquisa), 
+                "\n[Informe a ID do agendamento a ser modificado]\n> ");
+            agendamentoEncontrado = pesquisar_agendamento(listaAgendamentos, idPesquisa);
 
+            if (agendamentoEncontrado == NULL) {
+                fprintf(stderr, "[ERRO] O agendamento solicitado não existe\n");
+                break;
+            }
+
+            editar_dados_agendamento(agendamentoEncontrado, listaAgendamentos);
             break;
 
         case '5':
@@ -243,15 +382,9 @@ void modulo_agendamentos() {
                 break;
             }
 
-            // Lógica de remoção
-            agendamentoEncontrado->anterior->prox = agendamentoEncontrado->prox;
-            if (agendamentoEncontrado->prox != NULL) {
-                agendamentoEncontrado->prox->anterior = agendamentoEncontrado->anterior;
-            }
-            free(agendamentoEncontrado);
-            agendamentoEncontrado = NULL;
-
+            agendamentoEncontrado = remover_agendamento(agendamentoEncontrado);
             (qtdAgendamentos)--;
+
             printf("[%s Removido]\n", idPesquisa);
             break;
 
