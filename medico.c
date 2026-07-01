@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_MEDICOS 100
 
 Medico medicos[MAX_MEDICOS];
 int qtdMedicos = 0;
@@ -116,6 +115,71 @@ int pesquisar_medico(int inicio, int fim, char idDesejada[]) {
     return -1;
 }
 
+// Sub-menu específico para editar os dados de um médico sem afetar a ID
+static void editar_dados_medico(int indice) {
+    char opcao;
+
+    do {
+        printf("\n--- EDITANDO MÉDICO ---\n");
+        imprimir_medico(medicos[indice]);
+        
+        printf("\n[O que deseja alterar?]\n");
+        printf("1. Nome\n");
+        printf("2. CRM\n");
+        printf("3. Especialização\n");
+        printf("0. Concluir edição\n");
+        imprimir_cursor();
+        
+        opcao = obter_opcao();
+
+        switch (opcao) {
+            case '1':
+                while (1) {
+                    printf("Novo Nome: ");
+                    if (fgets(medicos[indice].nome, sizeof(medicos[indice].nome), stdin)) {
+                        remover_quebra_linha(medicos[indice].nome);
+                        break;
+                    }
+                    fprintf(stderr, "[ERRO] Tente novamente\n");
+                }
+                printf("[AVISO] Nome atualizado com sucesso.\n");
+                break;
+                
+            case '2':
+                while (1) {
+                    printf("Novo CRM: ");
+                    if (fgets(medicos[indice].crm, sizeof(medicos[indice].crm), stdin)) {
+                        remover_quebra_linha(medicos[indice].crm);
+                        break;
+                    }
+                    fprintf(stderr, "[ERRO] Tente novamente\n");
+                }
+                printf("[AVISO] CRM atualizado com sucesso.\n");
+                break;
+                
+            case '3':
+                while (1) {
+                    printf("Nova Especialização: ");
+                    if (fgets(medicos[indice].especializacao, sizeof(medicos[indice].especializacao), stdin)) {
+                        remover_quebra_linha(medicos[indice].especializacao);
+                        break;
+                    }
+                    fprintf(stderr, "[ERRO] Tente novamente\n");
+                }
+                printf("[AVISO] Especialização atualizada com sucesso.\n");
+                break;
+                
+            case '0':
+                printf("\n[Edição concluída]\n");
+                break;
+                
+            default:
+                printf("[ERRO] Opção inválida. Tente novamente...\n");
+                break;
+        }
+    } while (opcao != '0');
+}
+
 void modulo_medicos() {
     char opcao = 0;
     char idPesquisa[6];
@@ -175,7 +239,26 @@ void modulo_medicos() {
 
         case '4':
             // Modificar
-            printf("[Opção selecionada: %c]\n", opcao);
+            printf("\n[Informe a ID do médico a ser modificado]\n");
+            imprimir_cursor();
+            if (!fgets(idPesquisa, sizeof(idPesquisa), stdin)) {
+                fprintf(stderr, "[ERRO] Não foi possível ler a ID informada\n");
+                break;
+            }
+            // Lógica de pesquisa (igual a do remover)
+            remover_quebra_linha(idPesquisa);
+            rawId = atoi(idPesquisa + (isalpha(idPesquisa[0]) ? 1 : 0));
+            formatar_id_medico(rawId, idPesquisa, sizeof(idPesquisa));
+            indiceMedico = pesquisar_medico(0, qtdMedicos - 1, idPesquisa);
+
+            // Se não encontrou
+            if (indiceMedico < 0) {
+                fprintf(stderr, "[ERRO] O médico solicitado não existe\n");
+                break;
+            }
+
+            // Se encontrou, chama o sub-menu passando a posição no vetor
+            editar_dados_medico(indiceMedico);
             break;
 
         case '5':
