@@ -5,6 +5,7 @@
 #include "paciente.h"
 #include "medico.h"
 
+
 int main()
 {
     char opcao = 0;
@@ -19,7 +20,35 @@ int main()
 
     // Carregando dados dos arquivos
     printf("[Carregando Dados Anteriores...]\n");
-    ler_arquivo(caminhoArqMedicos, &qtdMedicos, medicos, sizeof(Medico));
+
+    // =========================================================================
+    // CARGA DINÂMICA DE MÉDICOS
+    // =========================================================================
+    FILE *arqMedicos = fopen(caminhoArqMedicos, "rb");
+    if (arqMedicos != NULL) {
+        // Puxa a quantidade salva no início do arquivo binário
+        if (fread(&qtdMedicos, sizeof(int), 1, arqMedicos) == 1 && qtdMedicos > 0) {
+            capacidadeMedicos = qtdMedicos;
+            
+            // Aloca o espaço exato necessário na memória Heap
+            medicos = malloc(capacidadeMedicos * sizeof(Medico));
+            
+            if (medicos != NULL) {
+                // Com o espaço reservado, lê todos os structs de uma vez
+                fread(medicos, sizeof(Medico), qtdMedicos, arqMedicos);
+            } else {
+                fprintf(stderr, "[ERRO CRÍTICO] Falha ao alocar memória inicial para médicos.\n");
+                qtdMedicos = 0;
+                capacidadeMedicos = 0;
+            }
+        }
+        fclose(arqMedicos);
+    } else {
+        qtdMedicos = 0;
+        capacidadeMedicos = 0;
+    }
+
+    // CARGA ESTÁTICA DE PACIENTES
     ler_arquivo(caminhoArqPacientes, &qtdPacientes, pacientes, sizeof(Paciente));
 
     // Sincroniza os contadores de ID baseando-se no último registro recuperado
@@ -61,15 +90,27 @@ int main()
     } while (opcao != '4');
     // Se a opção 4 for selecionada quebramos o laço
 
-    // Salvado dados
+    // Salvando dados
     printf("\n[Salvar Alterações? (S/n)]\n");
     imprimir_cursor();
     opcao = obter_opcao();
+    
+    // Usando a nova função bitwise do Arthur
     if (maiusculo(opcao) != 'N') {
         printf("[Salvando Dados...]\n");
         criar_pasta("dados");
         gravar_arquivo(caminhoArqMedicos, qtdMedicos, medicos, sizeof(Medico));
         gravar_arquivo(caminhoArqPacientes, qtdPacientes, pacientes, sizeof(Paciente));
+    }
+
+    // Liberação de memória dinâmica antes do fim do programa
+    if (medicos != NULL) {
+        free(medicos);
+        medicos = NULL; 
+    }
+    if (listaAgendamentos != NULL) {
+        free(listaAgendamentos);
+        listaAgendamentos = NULL;
     }
 
     printf("[Saindo do sistema...]\n");

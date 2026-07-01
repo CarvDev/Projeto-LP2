@@ -1,9 +1,6 @@
 #ifndef MEDICO_H
 #define MEDICO_H
 
-// vetor estático de medico
-#define MAX_MEDICOS 100
-
 typedef struct {
     char id[5];
     char nome[50];
@@ -11,10 +8,11 @@ typedef struct {
     char especializacao[50];
 } Medico;
 
-// Exportando as variáveis globais
-extern Medico medicos[];
+// Usando 'extern' para que a main consiga enxergar a nossa alocação dinâmica
+extern Medico *medicos; 
 extern int qtdMedicos;
-extern int ultimaIdMedico; 
+extern int capacidadeMedicos;
+extern int ultimaIdMedico;
 extern const char caminhoArqMedicos[];
 
 /* Solicita ao usuário informações para o cadastro de um novo médico,

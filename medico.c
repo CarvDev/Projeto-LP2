@@ -1,14 +1,14 @@
 #include "medico.h"
 #include "auxiliar.h"
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
-Medico medicos[MAX_MEDICOS];
-int qtdMedicos = 0;
-int ultimaIdMedico = 0; // Para controle numérico das IDs
+// Nosso vetor agora é um PONTEIRO DINÂMICO!
+Medico *medicos = NULL;
+int capacidadeMedicos = 0; // Controla o tamanho total alocado na memória
+int qtdMedicos = 0;        // Controla quantos médicos realmente existem
+int ultimaIdMedico = 0;    // Para controle numérico das IDs
 const char caminhoArqMedicos[] = "dados/medicos.bin";
 
 static void imprimir_menu_medicos() {
@@ -25,11 +25,6 @@ static void imprimir_menu_medicos() {
     qtdMedicos);
 }
 
-// Formata a ID do medico como String
-static void formatar_id_medico(int rawId, char* stringId, size_t tamString) {
-    snprintf(stringId, tamString, "M%03d", rawId);
-}
-
 void imprimir_medico(Medico medico) {
     printf("%s:\n", medico.id);
     printf("  Nome: %s\n", medico.nome);
@@ -42,8 +37,8 @@ Medico cadastrar_medico() {
 
     printf("---- NOVO MÉDICO ----\n");
 
-    // Id (definida automaticamente)
-    formatar_id_medico(ultimaIdMedico + 1, medico.id, sizeof(medico.id));
+    // Id (definida automaticamente usando a nova função do auxiliar)
+    formatar_id(ultimaIdMedico + 1, 'M', medico.id, sizeof(medico.id));
 
     // Nome
     while (1) {
@@ -84,6 +79,8 @@ Medico cadastrar_medico() {
     printf("[Os dados conferem? (S/n)]\n");
     imprimir_cursor();
     char resposta = obter_opcao();
+    
+    // Usando a nova função bitwise de maiúsculo do Arthur
     if (maiusculo(resposta) == 'N') return cadastrar_medico();
 
     (qtdMedicos)++;
@@ -183,7 +180,6 @@ static void editar_dados_medico(int indice) {
 void modulo_medicos() {
     char opcao = 0;
     char idPesquisa[6];
-    int rawId;
     int indiceMedico;
 
     // Iniciando interação com usuário
@@ -195,7 +191,19 @@ void modulo_medicos() {
 
         switch (opcao) {
         case '1':
-            // Cadastrar
+            // Cadastrar: LÓGICA DE ALOCAÇÃO DINÂMICA (realloc)
+            if (qtdMedicos >= capacidadeMedicos) {
+                // Se for a primeira vez, aloca 2 espaços. Se não, dobra o tamanho atual.
+                capacidadeMedicos = (capacidadeMedicos == 0) ? 2 : capacidadeMedicos * 2;
+                
+                Medico *temp = realloc(medicos, capacidadeMedicos * sizeof(Medico));
+                if (temp == NULL) {
+                    fprintf(stderr, "[ERRO CRÍTICO] Falha ao alocar memória!\n");
+                    capacidadeMedicos /= 2; // Reverte a capacidade em caso de erro
+                    break;
+                }
+                medicos = temp; // Atualiza o nosso ponteiro com a nova memória
+            }
             medicos[qtdMedicos] = cadastrar_medico();
             break;
 
@@ -209,22 +217,8 @@ void modulo_medicos() {
             break;
 
         case '3':
-            // Pesquisar
-            printf("\n[Informe a ID do médico a ser pesquisado]\n");
-            imprimir_cursor();
-            if (!fgets(idPesquisa, sizeof(idPesquisa), stdin)) {
-                fprintf(stderr, "[ERRO] Não foi possível ler a ID informada\n");
-                break;
-            }
-            remover_quebra_linha(idPesquisa);
-
-            // Tratamento inteligente da ID informada:
-            // ignora o primeiro digito (M) e pega apenas o valor 
-            // numérico, depois volta ao formato correto de string
-            rawId = atoi(idPesquisa + (isalpha(idPesquisa[0]) ? 1 : 0));
-            formatar_id_medico(rawId, idPesquisa, sizeof(idPesquisa));
-
-            // Faz a pesquisa com a ID informada
+            // Pesquisar (Usando a nova função inteligente)
+            solicitar_id_inteligente(idPesquisa, 'M', sizeof(idPesquisa), "\n[Informe a ID do médico a ser pesquisado]\n> ");
             indiceMedico = pesquisar_medico(0, qtdMedicos - 1, idPesquisa);
 
             // Caso de erro
@@ -238,17 +232,8 @@ void modulo_medicos() {
             break;
 
         case '4':
-            // Modificar
-            printf("\n[Informe a ID do médico a ser modificado]\n");
-            imprimir_cursor();
-            if (!fgets(idPesquisa, sizeof(idPesquisa), stdin)) {
-                fprintf(stderr, "[ERRO] Não foi possível ler a ID informada\n");
-                break;
-            }
-            // Lógica de pesquisa (igual a do remover)
-            remover_quebra_linha(idPesquisa);
-            rawId = atoi(idPesquisa + (isalpha(idPesquisa[0]) ? 1 : 0));
-            formatar_id_medico(rawId, idPesquisa, sizeof(idPesquisa));
+            // Modificar (Usando a nova função inteligente)
+            solicitar_id_inteligente(idPesquisa, 'M', sizeof(idPesquisa), "\n[Informe a ID do médico a ser modificado]\n> ");
             indiceMedico = pesquisar_medico(0, qtdMedicos - 1, idPesquisa);
 
             // Se não encontrou
@@ -262,17 +247,8 @@ void modulo_medicos() {
             break;
 
         case '5':
-            // Remover
-            printf("\n[Informe a ID do médico a ser removido]\n");
-            imprimir_cursor();
-            if (!fgets(idPesquisa, sizeof(idPesquisa), stdin)) {
-                fprintf(stderr, "[ERRO] Não foi possível ler a ID informada\n");
-                break;
-            }
-            // Lógica de pesquisa
-            remover_quebra_linha(idPesquisa);
-            rawId = atoi(idPesquisa + (isalpha(idPesquisa[0]) ? 1 : 0));
-            formatar_id_medico(rawId, idPesquisa, sizeof(idPesquisa));
+            // Remover (Usando a nova função inteligente)
+            solicitar_id_inteligente(idPesquisa, 'M', sizeof(idPesquisa), "\n[Informe a ID do médico a ser removido]\n> ");
             indiceMedico = pesquisar_medico(0, qtdMedicos - 1, idPesquisa);
 
             // Remove o médico
