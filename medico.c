@@ -84,7 +84,7 @@ Medico cadastrar_medico() {
     printf("[Os dados conferem? (S/n)]\n");
     imprimir_cursor();
     char resposta = obter_opcao();
-    if (toupper(resposta) == 'N') return cadastrar_medico();
+    if (maiusculo(resposta) == 'N') return cadastrar_medico();
 
     (qtdMedicos)++;
     (ultimaIdMedico)++;

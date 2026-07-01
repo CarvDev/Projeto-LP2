@@ -33,6 +33,21 @@ void remover_quebra_linha(char *string);
 // limpa o buffer de forma segura e o retorna
 char obter_opcao();
 
+/* 
+ * Converte um ID numérico para o formato padrão do sistema (Prefixo + 3 dígitos).
+ * Exemplo: se o caractere for 'P' e rawId for 7, o resultado gravado será "P007".
+ * Limita a gravação ao tamString para evitar buffer overflow.
+ */
+void formatar_id(int rawId, char caractere, char* stringId, size_t tamString);
+
+/*
+ * Lê o ID digitado pelo usuário e corrige a formatação automaticamente.
+ * A lógica ignora se o usuário digitou a letra do prefixo ou não:
+ * ela verifica se o primeiro caractere é uma letra, pula ele se for, 
+ * extrai apenas o número com atoi() e reaplica o formato padrão no mesmo buffer.
+ */
+void solicitar_id_inteligente(char stringId[], char caractere, size_t tamString, char mensagem[]);
+
 /* Lê o cabeçalho (quantidade) e carrega o bloco de dados de um arquivo binário. 
    Grava a quantidade de dados via ponteiro.
    Define a quantidade como 0 caso o arquivo não exista ou esteja corrompido. */
@@ -49,5 +64,11 @@ void remover_arquivo(char *nomeArquivo);
  * Retorna o ponteiro para o vetor em caso de sucesso, ou NULL se o índice for inválido.
  */
 void *remover_item(void *vetor, int *tamanhoVetor, size_t tamanhoDado, int indiceItem);
+
+/* Função biwise que torna o caratere recebido maiúsculo.
+ * Funciona igual a função toupper() e retorna o mesmo caractere em
+   caso de não ser uma letra minúscula
+*/
+char maiusculo (char c);
 
 #endif

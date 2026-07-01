@@ -78,7 +78,7 @@ Paciente cadastrar_paciente() {
 
         if (fgets(generoTemp, sizeof(generoTemp), stdin)) {
             remover_quebra_linha(generoTemp);
-            paciente.genero = toupper(generoTemp[0]);
+            paciente.genero = maiusculo(generoTemp[0]);
 
             if (paciente.genero != 'M' && paciente.genero != 'F') {
                 fprintf(stderr, "[ERRO] Gênero Inválido. Por favor, tente novamente\n");
@@ -112,7 +112,7 @@ Paciente cadastrar_paciente() {
             for (int i = 0; i < tamString; i++) {
                 char *ptrChar = &tipoSanguineoTemp[i];
                 // Deixando tudo maiúsculo
-                *ptrChar = toupper(*ptrChar);
+                *ptrChar = maiusculo(*ptrChar);
             }
 
             // Verificando se está no padrão ideal:
@@ -151,7 +151,7 @@ Paciente cadastrar_paciente() {
     printf("[Os dados conferem? (S/n)]\n");
     imprimir_cursor();
     char resposta = obter_opcao();
-    if (toupper(resposta) == 'N') return cadastrar_paciente();
+    if (maiusculo(resposta) == 'N') return cadastrar_paciente();
 
     (qtdPacientes)++;
     (ultimaIdPaciente)++;

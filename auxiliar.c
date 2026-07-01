@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include "auxiliar.h"
 
 void imprimir_menu()
@@ -49,6 +51,27 @@ char obter_opcao()
     if (caractereLido != '\n') limpar_buffer();
 
     return caractereLido;
+}
+
+void formatar_id(int rawId, char caractere, char* stringId, size_t tamString) {
+    snprintf(stringId, tamString, "%c%03d", caractere, rawId);
+}
+
+void solicitar_id_inteligente(char stringId[], char caractere, size_t tamString, char mensagem[]) {
+    while (1) {
+        printf("%s", mensagem);
+
+        if (!fgets(stringId, tamString, stdin)) {
+            fprintf(stderr, "[ERRO] Por favor, tente novamente\n");
+            remover_quebra_linha(stringId);
+            continue;
+        }
+        break;
+    }
+    remover_quebra_linha(stringId);
+
+    int rawId = atoi(stringId + (isalpha(stringId[0]) ? 1 : 0));
+    formatar_id(rawId, caractere, stringId, tamString);
 }
 
 void ler_arquivo(const char *nomeArquivo, int *ptrQuantidadeDados, void *vetorDados, size_t tamanhoDado) {
@@ -142,4 +165,18 @@ void *remover_item(void *vetor, int *tamanhoVetor, size_t tamanhoDado, int indic
 
     (*tamanhoVetor)--;
     return vetor;
+}
+
+char maiusculo (char c) {
+	// Garante que o caractere está no intervalo das minúsculas 'a'..'z'
+	if (c < 'a' || c > 'z') return c;
+
+	// Máscara correspondente a 0b11011111 
+	// As minúsculas possuem o bit 5 ativo (limpá-lo resulta na maiúscula)
+	char filtro = 0xDF;
+
+	// Aplica a máscara para zerar o bit 5
+	c &= filtro;
+
+	return c;
 }

@@ -1,6 +1,6 @@
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "agendamento.h"
 #include "auxiliar.h"
 #include "paciente.h"
 #include "medico.h"
@@ -8,6 +8,14 @@
 int main()
 {
     char opcao = 0;
+    
+    // Inicializando a cabeça da lista encadeada dos agendamentos
+    listaAgendamentos = calloc(1, sizeof(Agendamento));
+    if (listaAgendamentos == NULL) {
+        fprintf(stderr, "[ERRO CRÍTICO] Não foi possível alocar memória para os agendamentos.\n"
+            "[Saindo do sistema...]\n");
+        return 1;
+    }
 
     // Carregando dados dos arquivos
     printf("[Carregando Dados Anteriores...]\n");
@@ -38,7 +46,7 @@ int main()
 
         case '3':
             // Gerenciar agendamentos
-            printf("[Opção selecionada: %c]\n", opcao);
+            modulo_agendamentos();
             break;
 
         case '4':
@@ -57,7 +65,7 @@ int main()
     printf("\n[Salvar Alterações? (S/n)]\n");
     imprimir_cursor();
     opcao = obter_opcao();
-    if (toupper(opcao) != 'N') {
+    if (maiusculo(opcao) != 'N') {
         printf("[Salvando Dados...]\n");
         criar_pasta("dados");
         gravar_arquivo(caminhoArqMedicos, qtdMedicos, medicos, sizeof(Medico));
