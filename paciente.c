@@ -1,13 +1,11 @@
 #include "paciente.h"
 #include "auxiliar.h"
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_PACIENTES 100
-
-Paciente pacientes[MAX_PACIENTES];
+Paciente *pacientes = NULL;
+int capacidadePacientes = 0;
 int qtdPacientes = 0;
 int ultimaIdPaciente = 0; // Para controle numérico das IDs
 const char caminhoArqPacientes[] = "dados/pacientes.bin";
@@ -26,11 +24,6 @@ static void imprimir_menu_pacientes() {
     qtdPacientes);
 }
 
-// Formata a ID do paciente como String
-static void formatar_id_paciente(int rawId, char* stringId, size_t tamString) {
-    snprintf(stringId, tamString, "P%03d", rawId);
-}
-
 void imprimir_paciente(Paciente paciente) {
     printf("%s:\n", paciente.id);
     printf("  Nome: %s\n", paciente.nome);
@@ -47,7 +40,7 @@ Paciente cadastrar_paciente() {
     printf("---- NOVO PACIENTE ----\n");
 
     // Id (definida automaticamente)
-    formatar_id_paciente(ultimaIdPaciente + 1, paciente.id, sizeof(paciente.id));
+    formatar_id(ultimaIdPaciente + 1, 'P', paciente.id, sizeof(paciente.id));
 
     // Nome
     while (1) {
@@ -182,6 +175,129 @@ int pesquisar_paciente(int inicio, int fim, char idDesejada[]) {
     return -1;
 }
 
+// Sub-menu específico para editar os dados de um paciente sem afetar a ID
+static void editar_dados_paciente(int indice) {
+    char opcao;
+
+    do {
+        printf("\n--- EDITANDO PACIENTE ---\n");
+        imprimir_paciente(pacientes[indice]);
+
+        printf("\n[O que deseja alterar?]\n");
+        printf("1. Nome\n");
+        printf("2. Idade\n");
+        printf("3. Gênero\n");
+        printf("4. Peso\n");
+        printf("5. Tipo Sanguíneo\n");
+        printf("0. Concluir edição\n");
+        imprimir_cursor();
+
+        opcao = obter_opcao();
+
+        switch (opcao) {
+            case '1':
+                while (1) {
+                    printf("Novo Nome: ");
+                    if (fgets(pacientes[indice].nome, sizeof(pacientes[indice].nome), stdin)) {
+                        remover_quebra_linha(pacientes[indice].nome);
+                        break;
+                    }
+                    fprintf(stderr, "[ERRO] Tente novamente\n");
+                }
+                printf("[AVISO] Nome atualizado com sucesso.\n");
+                break;
+
+            case '2':
+                while (1) {
+                    printf("Nova Idade: ");
+                    if (scanf(" %d", &pacientes[indice].idade) == 1) break;
+                    limpar_buffer();
+                    fprintf(stderr, "[ERRO] Tente novamente\n");
+                }
+                limpar_buffer();
+                printf("[AVISO] Idade atualizada com sucesso.\n");
+                break;
+
+            case '3':
+                while (1) {
+                    char generoTemp[10];
+                    printf("Novo Gênero (F/M): ");
+                    if (fgets(generoTemp, sizeof(generoTemp), stdin)) {
+                        remover_quebra_linha(generoTemp);
+                        pacientes[indice].genero = maiusculo(generoTemp[0]);
+
+                        if (pacientes[indice].genero != 'M' && pacientes[indice].genero != 'F') {
+                            fprintf(stderr, "[ERRO] Gênero Inválido. Por favor, tente novamente\n");
+                            continue;
+                        }
+                        break;
+                    }
+                    fprintf(stderr, "[ERRO] Tente novamente\n");
+                }
+                printf("[AVISO] Gênero atualizado com sucesso.\n");
+                break;
+
+            case '4':
+                while (1) {
+                    printf("Novo Peso (kg): ");
+                    if (scanf(" %f", &pacientes[indice].peso) == 1) break;
+                    limpar_buffer();
+                    fprintf(stderr, "[ERRO] Tente novamente\n");
+                }
+                limpar_buffer();
+                printf("[AVISO] Peso atualizado com sucesso.\n");
+                break;
+
+            case '5':
+                while (1) {
+                    printf("Novo Tipo Sanguíneo: ");
+                    char tipoSanguineoTemp[5];
+                    if (fgets(tipoSanguineoTemp, sizeof(tipoSanguineoTemp), stdin)) {
+                        remover_quebra_linha(tipoSanguineoTemp);
+
+                        int tamString = strlen(tipoSanguineoTemp);
+                        for (int i = 0; i < tamString; i++) {
+                            tipoSanguineoTemp[i] = maiusculo(tipoSanguineoTemp[i]);
+                        }
+
+                        switch (tipoSanguineoTemp[0]) {
+                            case 'A': break;
+                            case 'B': break;
+                            case 'O': break;
+                            default: goto erro;
+                        }
+
+                        switch (tipoSanguineoTemp[tamString - 1]) {
+                            case '+': break;
+                            case '-': break;
+                            default: goto erro;
+                        }
+
+                        if (tamString > 2 && tipoSanguineoTemp[1] != 'B') goto erro;
+
+                        strcpy(pacientes[indice].tipoSanguineo, tipoSanguineoTemp);
+                        break;
+
+                        erro:
+                        fprintf(stderr, "[ERRO] Tipo Sanguíneo Inválido. Por favor, tente novamente\n");
+                        continue;
+                    }
+                    fprintf(stderr, "[ERRO] Tente novamente\n");
+                }
+                printf("[AVISO] Tipo Sanguíneo atualizado com sucesso.\n");
+                break;
+
+            case '0':
+                printf("\n[Edição concluída]\n");
+                break;
+
+            default:
+                printf("[ERRO] Opção inválida. Tente novamente...\n");
+                break;
+        }
+    } while (opcao != '0');
+}
+
 void modulo_pacientes() {
     char opcao = 0;
     char idPesquisa[6];
@@ -198,6 +314,18 @@ void modulo_pacientes() {
         switch (opcao) {
         case '1':
             // Cadastrar
+            if (qtdPacientes >= capacidadePacientes) {
+                // Se for a primeira vez, aloca 2 espaços. Se não, dobra o tamanho atual.
+                capacidadePacientes = (capacidadePacientes == 0) ? 2 : capacidadePacientes * 2;
+                
+                Paciente *temp = realloc(pacientes, capacidadePacientes * sizeof(Paciente));
+                if (temp == NULL) {
+                    fprintf(stderr, "[ERRO CRÍTICO] Falha ao alocar memória!\n");
+                    capacidadePacientes /= 2; // Reverte a capacidade em caso de erro
+                    break;
+                }
+                pacientes = temp; // Atualiza o ponteiro com a nova memória
+            }
             pacientes[qtdPacientes] = cadastrar_paciente();
             break;
 
@@ -212,21 +340,7 @@ void modulo_pacientes() {
 
         case '3':
             // Pesquisar
-            printf("\n[Informe a ID do paciente a ser pesquisado]\n");
-            imprimir_cursor();
-            if (!fgets(idPesquisa, sizeof(idPesquisa), stdin)) {
-                fprintf(stderr, "[ERRO] Não foi possível ler a ID informada\n");
-                break;
-            }
-            remover_quebra_linha(idPesquisa);
-
-            // Tratamento inteligente da ID informada:
-            // ignora o primeiro digito (P) e pega apenas o valor 
-            // numérico, depois volta ao formato correto de string
-            rawId = atoi(idPesquisa + (isalpha(idPesquisa[0]) ? 1 : 0));
-            formatar_id_paciente(rawId, idPesquisa, sizeof(idPesquisa));
-
-            // Faz a pesquisa com a ID informada
+            solicitar_id_inteligente(idPesquisa, 'M', sizeof(idPesquisa), "\n[Informe a ID do paciente a ser pesquisado]\n>  ");
             indicePaciente = pesquisar_paciente(0, qtdPacientes - 1, idPesquisa);
 
             // Caso de erro
@@ -241,21 +355,20 @@ void modulo_pacientes() {
 
         case '4':
             // Modificar
-            printf("[Opção selecionada: %c]\n", opcao);
+            solicitar_id_inteligente(idPesquisa, 'P', sizeof(Paciente), "\n[Informe a ID do paciente a ser modificado]\n> ");
+            indicePaciente = pesquisar_paciente(0, qtdPacientes - 1, idPesquisa);
+
+            if (indicePaciente < 0) {
+                fprintf(stderr, "[ERRO] O paciente solicitado não existe\n");
+                break;
+            }
+
+            editar_dados_paciente(indicePaciente);
             break;
 
         case '5':
             // Remover
-            printf("\n[Informe a ID do paciente a ser removido]\n");
-            imprimir_cursor();
-            if (!fgets(idPesquisa, sizeof(idPesquisa), stdin)) {
-                fprintf(stderr, "[ERRO] Não foi possível ler a ID informada\n");
-                break;
-            }
-            // Lógica de pesquisa
-            remover_quebra_linha(idPesquisa);
-            rawId = atoi(idPesquisa + (isalpha(idPesquisa[0]) ? 1 : 0));
-            formatar_id_paciente(rawId, idPesquisa, sizeof(idPesquisa));
+            solicitar_id_inteligente(idPesquisa, 'P', sizeof(Paciente), "\n[Informe a ID do paciente a ser removido]\n> ");
             indicePaciente = pesquisar_paciente(0, qtdPacientes - 1, idPesquisa);
 
             // Remove o paciente 

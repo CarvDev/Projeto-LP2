@@ -74,31 +74,47 @@ void solicitar_id_inteligente(char stringId[], char caractere, size_t tamString,
     formatar_id(rawId, caractere, stringId, tamString);
 }
 
-void ler_arquivo(const char *nomeArquivo, int *ptrQuantidadeDados, void *vetorDados, size_t tamanhoDado) {
+void* ler_arquivo(const char *nomeArquivo, int *ptrQuantidadeDados, int *ptrCapacidadeVetor, size_t tamanhoDado) {
     FILE *arquivo = fopen(nomeArquivo, "rb");
     if (arquivo == NULL) {
-        // Se não foi possível abrir o arquivo, fprint avisa e perror informa o motivo
+        // Em caso de falha de abertura, a quantidade é zerada e retorna-se NULL para indicar ausência de dados
         fprintf(stderr, "[AVISO] Não foi possível ler o arquivo '%s'\n.", nomeArquivo);
         printf("[Começando sem dados deste Módulo]\n");
         *ptrQuantidadeDados = 0;
-        return;
+        return NULL;
     }
 
-    // Primeiro lemos a quantidade de dados no cabeçalho do arquivo
-    // O retorno de fread deve ser exatamente 1. Caso contrário, o arquivo está vazio ou corrompido.
+    // Leitura da quantidade de registros no cabeçalho
     if (fread(ptrQuantidadeDados, sizeof(*ptrQuantidadeDados), 1, arquivo) != 1) {
         fprintf(stderr, "[AVISO] Arquivo '%s' vazio ou cabeçalho ilegível. Assumindo 0 registros.\n", nomeArquivo);
         *ptrQuantidadeDados = 0;
         fclose(arquivo);
-        return;
+        return NULL;
     }
 
-    // Em seguida, lemos os dados
-    if (*ptrQuantidadeDados > 0) {
-        fread(vetorDados, tamanhoDado, *ptrQuantidadeDados, arquivo);
+    if (*ptrQuantidadeDados <= 0) {
+        fclose(arquivo);
+        return NULL;
     }
 
+    // Calcula a potência de 2 mais próxima para acomodar os dados no vetor dinâmico
+    for (*ptrCapacidadeVetor = 2; *ptrCapacidadeVetor <= *ptrQuantidadeDados; *ptrCapacidadeVetor *= 2);
+
+    // Aloca um bloco contíguo de memória para a capacidade calculada
+    void *vetorDados = malloc(*(ptrCapacidadeVetor) * tamanhoDado);
+    if (vetorDados == NULL) {
+        fprintf(stderr, "[ERRO] Falha de alocação de memória para os dados do arquivo '%s'.\n", nomeArquivo);
+        *ptrQuantidadeDados = 0;
+        *ptrCapacidadeVetor = 0;
+        fclose(arquivo);
+        return NULL;
+    }
+
+    // Preenche o bloco alocado com os dados do arquivo
+    fread(vetorDados, tamanhoDado, *ptrQuantidadeDados, arquivo);
     fclose(arquivo);
+
+    return vetorDados;
 }
 
 void gravar_arquivo(const char *nomeArquivo, int quantidadeDados, void *vetorDados, size_t tamanhoDado) {

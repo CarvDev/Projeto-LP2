@@ -38,7 +38,7 @@ void modulo_agendamentos();
  * gravando apenas as chaves e o timestamp no binário para otimizar espaço
  * e impedir a gravação de lixo de memória irrecuperável.
  */
-void salvar_agendamentos(void);
+void gravar_arquivo_agendamentos(void);
 
 /*
  * Lê o cabeçalho do arquivo binário para restaurar os contadores (qtd e última ID)
@@ -46,7 +46,7 @@ void salvar_agendamentos(void);
  * Diferentemente dos vetores, a estrutura de lista encadeada nos obriga
  * a ler de um por um.
  */
-void carregar_agendamentos(void);
+void ler_arquivo_agendamentos(void);
 
 // Exportando as variáveis globais
 extern int ultimaIdAgendamento;

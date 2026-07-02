@@ -11,7 +11,8 @@ typedef struct {
 } Paciente;
 
 // Exportando as variáveis globais
-extern Paciente pacientes[];
+extern Paciente *pacientes;
+extern int capacidadePacientes;
 extern int qtdPacientes;
 extern int ultimaIdPaciente;
 extern const char caminhoArqPacientes[];

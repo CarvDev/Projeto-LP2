@@ -48,10 +48,11 @@ void formatar_id(int rawId, char caractere, char* stringId, size_t tamString);
  */
 void solicitar_id_inteligente(char stringId[], char caractere, size_t tamString, char mensagem[]);
 
-/* Lê o cabeçalho (quantidade) e carrega o bloco de dados de um arquivo binário. 
-   Grava a quantidade de dados via ponteiro.
+/* Lê o cabeçalho (quantidade) e carrega o bloco de dados de um arquivo binário, 
+   alocando o tamanho necessário, com arredondamaneto para a potência de 2 mais próxima. 
+   Grava a quantidade de dados e a nova capacidade via ponteiro.
    Define a quantidade como 0 caso o arquivo não exista ou esteja corrompido. */
-void ler_arquivo(const char *nomeArquivo, int *ptrQuantidadeDados, void *vetorDados, size_t tamanhoDado);
+void* ler_arquivo(const char *nomeArquivo, int *ptrQuantidadeDados, int *ptrCapacidadeVetor, size_t tamanhoDado);
 
 // Grava a quantidade de elementos no cabeçalho e depois o bloco de dados em formato binário.
 void gravar_arquivo(const char *nomeArquivo, int quantidadeDados, void *vetorDados, size_t tamanhoDado);

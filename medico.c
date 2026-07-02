@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Nosso vetor agora é um PONTEIRO DINÂMICO!
 Medico *medicos = NULL;
 int capacidadeMedicos = 0; // Controla o tamanho total alocado na memória
 int qtdMedicos = 0;        // Controla quantos médicos realmente existem
@@ -80,7 +79,6 @@ Medico cadastrar_medico() {
     imprimir_cursor();
     char resposta = obter_opcao();
     
-    // Usando a nova função bitwise de maiúsculo do Arthur
     if (maiusculo(resposta) == 'N') return cadastrar_medico();
 
     (qtdMedicos)++;
@@ -191,7 +189,6 @@ void modulo_medicos() {
 
         switch (opcao) {
         case '1':
-            // Cadastrar: LÓGICA DE ALOCAÇÃO DINÂMICA (realloc)
             if (qtdMedicos >= capacidadeMedicos) {
                 // Se for a primeira vez, aloca 2 espaços. Se não, dobra o tamanho atual.
                 capacidadeMedicos = (capacidadeMedicos == 0) ? 2 : capacidadeMedicos * 2;
@@ -202,7 +199,7 @@ void modulo_medicos() {
                     capacidadeMedicos /= 2; // Reverte a capacidade em caso de erro
                     break;
                 }
-                medicos = temp; // Atualiza o nosso ponteiro com a nova memória
+                medicos = temp; // Atualiza o ponteiro com a nova memória
             }
             medicos[qtdMedicos] = cadastrar_medico();
             break;
@@ -217,7 +214,7 @@ void modulo_medicos() {
             break;
 
         case '3':
-            // Pesquisar (Usando a nova função inteligente)
+            // Pesquisar 
             solicitar_id_inteligente(idPesquisa, 'M', sizeof(idPesquisa), "\n[Informe a ID do médico a ser pesquisado]\n> ");
             indiceMedico = pesquisar_medico(0, qtdMedicos - 1, idPesquisa);
 
@@ -232,7 +229,7 @@ void modulo_medicos() {
             break;
 
         case '4':
-            // Modificar (Usando a nova função inteligente)
+            // Modificar 
             solicitar_id_inteligente(idPesquisa, 'M', sizeof(idPesquisa), "\n[Informe a ID do médico a ser modificado]\n> ");
             indiceMedico = pesquisar_medico(0, qtdMedicos - 1, idPesquisa);
 
@@ -247,7 +244,7 @@ void modulo_medicos() {
             break;
 
         case '5':
-            // Remover (Usando a nova função inteligente)
+            // Remover
             solicitar_id_inteligente(idPesquisa, 'M', sizeof(idPesquisa), "\n[Informe a ID do médico a ser removido]\n> ");
             indiceMedico = pesquisar_medico(0, qtdMedicos - 1, idPesquisa);
 

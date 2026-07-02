@@ -24,7 +24,7 @@ static void imprimir_menu_agendamentos() {
         "3. Pesquisar agendamento\n"
         "4. Modificar agendamento\n"
         "5. Remover agendamento\n"
-        "6. Limpar agendamentos antigos"
+        "6. Limpar agendamentos antigos\n"
         "7. Voltar\n",
     qtdAgendamentos);
 }
@@ -319,7 +319,6 @@ void modulo_agendamentos() {
     char idPesquisa[6];
     Agendamento *agendamentoEncontrado = NULL;
     Agendamento *atual = listaAgendamentos; 
-    time_t limite = time(NULL) - 86400; // 24 horas atrás
 
     // Iniciando interação com usuário
     do {
@@ -397,6 +396,7 @@ void modulo_agendamentos() {
             atual = listaAgendamentos->prox;
             Agendamento *proximo;
             int removidos = 0;
+            time_t limite = time(NULL) - 86400; // 24 horas atraś
 
             // Iteramos sequencialmente e interrompemos o laço no momento em que encontrarmos 
             // um agendamento mais recente que o limite imposto.
@@ -427,7 +427,7 @@ void modulo_agendamentos() {
     // Se a opção 6 for selecionada quebramos o laço
 }
 
-void salvar_agendamentos() {
+void gravar_arquivo_agendamentos() {
     FILE *arquivo = fopen(caminhoArqAgendamentos, "wb");
     if (arquivo == NULL) {
         perror(caminhoArqAgendamentos);
@@ -457,7 +457,7 @@ void salvar_agendamentos() {
     fclose(arquivo);
 }
 
-void carregar_agendamentos() {
+void ler_arquivo_agendamentos() {
     FILE *arquivo = fopen(caminhoArqAgendamentos, "rb");
     if (arquivo == NULL) {
         fprintf(stderr, "[AVISO] Não foi possível ler o arquivo '%s'\n.", caminhoArqAgendamentos);
