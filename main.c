@@ -50,6 +50,7 @@ int main()
 
     // CARGA ESTÁTICA DE PACIENTES
     ler_arquivo(caminhoArqPacientes, &qtdPacientes, pacientes, sizeof(Paciente));
+    carregar_agendamentos();
 
     // Sincroniza os contadores de ID baseando-se no último registro recuperado
     if (qtdMedicos > 0) ultimaIdMedico = atoi(medicos[qtdMedicos - 1].id + 1);
@@ -101,6 +102,7 @@ int main()
         criar_pasta("dados");
         gravar_arquivo(caminhoArqMedicos, qtdMedicos, medicos, sizeof(Medico));
         gravar_arquivo(caminhoArqPacientes, qtdPacientes, pacientes, sizeof(Paciente));
+        salvar_agendamentos();
     }
 
     // Liberação de memória dinâmica antes do fim do programa

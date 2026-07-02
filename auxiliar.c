@@ -78,8 +78,8 @@ void ler_arquivo(const char *nomeArquivo, int *ptrQuantidadeDados, void *vetorDa
     FILE *arquivo = fopen(nomeArquivo, "rb");
     if (arquivo == NULL) {
         // Se não foi possível abrir o arquivo, fprint avisa e perror informa o motivo
-        fprintf(stderr, "[AVISO] Não foi possível ler o arquivo '%s'. ", nomeArquivo);
-        perror("Motivo");
+        fprintf(stderr, "[AVISO] Não foi possível ler o arquivo '%s'\n.", nomeArquivo);
+        printf("[Começando sem dados deste Módulo]\n");
         *ptrQuantidadeDados = 0;
         return;
     }

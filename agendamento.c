@@ -426,3 +426,78 @@ void modulo_agendamentos() {
     } while (opcao != '7');
     // Se a opção 6 for selecionada quebramos o laço
 }
+
+void salvar_agendamentos() {
+    FILE *arquivo = fopen(caminhoArqAgendamentos, "wb");
+    if (arquivo == NULL) {
+        perror(caminhoArqAgendamentos);
+        fprintf(stderr, "[AVISO] Dados não serão salvos\n");
+        return;
+    }
+
+    // O cabeçalho do arquivo armazenará a última ID
+    fwrite(&ultimaIdAgendamento, sizeof(int), 1, arquivo);
+
+    // Iteramos a partir do primeiro nó válido (ignorando o nó cabeça)
+    Agendamento *atual = listaAgendamentos->prox;
+    RegistroAgendamento reg;
+
+    while (atual != NULL) {
+        // Transferindo os dados do nó para o buffer de gravação
+        strcpy(reg.id, atual->id);
+        strcpy(reg.idMedico, atual->idMedico);
+        strcpy(reg.idPaciente, atual->idPaciente);
+        reg.timestamp = atual->timestamp;
+
+        fwrite(&reg, sizeof(RegistroAgendamento), 1, arquivo);
+        
+        atual = atual->prox;
+    }
+
+    fclose(arquivo);
+}
+
+void carregar_agendamentos() {
+    FILE *arquivo = fopen(caminhoArqAgendamentos, "rb");
+    if (arquivo == NULL) {
+        fprintf(stderr, "[AVISO] Não foi possível ler o arquivo '%s'\n.", caminhoArqAgendamentos);
+        printf("[Começando sem dados deste módulo]\n");
+        return; 
+    }
+
+    // Leitura do cabeçalho (última ID)
+    if (fread(&ultimaIdAgendamento, sizeof(int), 1, arquivo) != 1) {
+        // Se falhar na primeira leitura, o arquivo está vazio ou corrompido
+        fprintf(stderr, "[AVISO] Arquivo '%s' vazio ou cabeçalho ilegível. Assumindo 0 registros.\n", caminhoArqAgendamentos);
+        ultimaIdAgendamento = 0;
+        fclose(arquivo);
+        return; 
+    }
+
+    RegistroAgendamento reg;
+    Agendamento *cauda = listaAgendamentos; 
+
+    while (fread(&reg, sizeof(RegistroAgendamento), 1, arquivo) == 1) {
+        Agendamento *novo = malloc(sizeof(Agendamento));
+        if (novo == NULL) {
+            fprintf(stderr, "[ERRO] Falha de alocação de memória ao carregar agendamentos.\n");
+            printf("[Dados lidos com sucesso: %d\n]", qtdAgendamentos);
+            break;
+        }
+
+        strcpy(novo->id, reg.id);
+        strcpy(novo->idMedico, reg.idMedico);
+        strcpy(novo->idPaciente, reg.idPaciente);
+        novo->timestamp = reg.timestamp;
+        novo->prox = NULL;
+        
+        // Amarrando o novo nó na estrutura da lista duplamente encadeada
+        novo->anterior = cauda;
+        cauda->prox = novo;
+        cauda = novo;
+
+        (qtdAgendamentos)++;
+    }
+
+    fclose(arquivo);
+}
