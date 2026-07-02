@@ -1,13 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "agendamento.h"
 #include "auxiliar.h"
 #include "paciente.h"
 #include "medico.h"
 
 
-int main()
+int main(int argc, char *argv[])
 {
+    // Tratamento dos argumentos cli
+    if (argc > 2) {
+        fprintf(stderr, "[ERRO] Argumentos demais\n");
+        return 1;
+    }
+
+    // Se algum argumento for passado, o executamos
+    if (argc == 2) {
+        // --help
+        if (!strcmp("--help", argv[1])) {
+            imprimir_menu_ajuda();
+            return 0;
+        }
+
+        // --reset
+        if (!strcmp("--reset", argv[1])) {
+            remover_arquivo(caminhoArqPacientes);
+            remover_arquivo(caminhoArqMedicos);
+            remover_arquivo(caminhoArqAgendamentos);
+            return 0;
+        }
+
+        // Caso de erro
+        fprintf(stderr, "[ERRO] '%s' não é um argumento válido\n", argv[1]);
+        return 1;
+    }
+
+    // Funcionamento padrão (sem argumentos cli)
     char opcao = 0;
     
     // Inicializando a cabeça da lista encadeada dos agendamentos
@@ -53,8 +82,13 @@ int main()
             modulo_agendamentos();
             break;
 
-        case '4':
+        case '0':
             // Sair do sistema
+            break;
+
+        case '?':
+            // Ajuda
+            imprimir_menu_ajuda();
             break;
 
         default:
@@ -62,8 +96,7 @@ int main()
             printf("[ERRO] Opção inválida. Tente novamente...\n");
             break;
         }
-    } while (opcao != '4');
-    // Se a opção 4 for selecionada quebramos o laço
+    } while (opcao != '0');
 
     // Salvando dados
     printf("\n[Salvar Alterações? (S/n)]\n");

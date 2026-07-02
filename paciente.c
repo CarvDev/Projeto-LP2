@@ -20,7 +20,7 @@ static void imprimir_menu_pacientes() {
         "3. Pesquisar paciente\n"
         "4. Modificar paciente\n"
         "5. Remover paciente\n"
-        "6. Voltar\n",
+        "0. Voltar\n",
     qtdPacientes);
 }
 
@@ -387,7 +387,6 @@ void modulo_pacientes() {
             printf("[ERRO] Opção inválida. Tente novamente...\n\n");
             break;
         }
-    } while (opcao != '6');
-    // Se a opção 6 for selecionada quebramos o laço
+    } while (opcao != '0');
 }
 

@@ -25,7 +25,7 @@ static void imprimir_menu_agendamentos() {
         "4. Modificar agendamento\n"
         "5. Remover agendamento\n"
         "6. Limpar agendamentos antigos\n"
-        "7. Voltar\n",
+        "0. Voltar\n",
     qtdAgendamentos);
 }
 
@@ -416,7 +416,7 @@ void modulo_agendamentos() {
             printf("[AVISO] Limpeza concluída: %d agendamento(s) antigo(s) removido(s).\n", removidos);
             break;
 
-        case '7':
+        case '0':
             // Voltar
             break;
 
@@ -425,8 +425,7 @@ void modulo_agendamentos() {
             printf("[ERRO] Opção inválida. Tente novamente...\n\n");
             break;
         }
-    } while (opcao != '7');
-    // Se a opção 6 for selecionada quebramos o laço
+    } while (opcao != '0');
 }
 
 void gravar_arquivo_agendamentos() {

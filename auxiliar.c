@@ -16,8 +16,40 @@ void imprimir_menu()
            "1. Gerenciar pacientes (cadastros: %d)\n"
            "2. Gerenciar médicos (cadastros: %d)\n"
            "3. Gerenciar agendamentos (cadastros: %d)\n"
-           "4. Sair do sistema\n",
+           "0. Sair do sistema\n"
+           "?. Ajuda\n",
         qtdPacientes, qtdMedicos, qtdAgendamentos);
+}
+
+void imprimir_menu_ajuda() {
+    printf("\n------ AJUDA: COMO USAR O SISTEMA ------\n"
+        "Uso básico:\n"
+        " - Digite o número da opção e pressione Enter.\n"
+
+        "\nMenus principais:\n"
+        " 1) Gerenciar pacientes: cadastrar, listar, alterar e remover pacientes.\n"
+        " 2) Gerenciar médicos: cadastrar, listar, alterar e remover médicos.\n"
+        " 3) Gerenciar agendamentos: agendar, listar, alterar e cancelar agendamentos.\n"
+        " 0) Sair do sistema.\n"
+
+        "\nFormato de IDs:\n"
+        " - IDs usam um caractere seguido de 3 dígitos (ex.: P001 para paciente, M001 para médico, A001 para agendamento).\n"
+
+        "\nEntrada de dados:\n"
+        " - Após digitar, pressione Enter para confirmar. Se a entrada exceder o tamanho permitido, o restante da linha será descartado.\n"
+
+        "\nDicas e convenções:\n"
+        " - Ao solicitar um ID, você pode digitar apenas o número (ex.: 1) ou o ID completo (ex.: P001); o sistema formata automaticamente quando aplicável.\n"
+        " - (0) é sempre a opção parão para voltar ao menu anterior.\n"
+        " - Se o ano for omitido ao informar uma data, o sistema assume o ano atual.\n"
+        " - Para tratamento de tipos sanguíneos, gêneros e menus [s/n], o sistema converterá os caracteres minúsculos em maiúsculos.\n"
+
+        "\nPersistência de dados:\n"
+        " - Os dados são gravados em arquivos no diretório 'dados/' quando o programa salva as alterações ou é encerrado corretamente.\n"
+
+        "\nComandos CLI:\n"
+        " - '--help' para exibir esta tela novamente.\n"
+        " - '--reset' para apagar os arquivos de dados.\n");
 }
 
 void imprimir_cursor() { printf("> "); }
@@ -151,11 +183,11 @@ void gravar_arquivo(const char *nomeArquivo, int quantidadeDados, void *vetorDad
     fclose(arquivo);
 }
 
-void remover_arquivo(char *nomeArquivo) {
+void remover_arquivo(const char *nomeArquivo) {
     // Se o retorno de remove for diferente de zero, não foi possível remover o arquivo
     if (remove(nomeArquivo) != 0) {
-        fprintf(stderr, "[ERRO] Não foi possivel deletar o arquivo.\n");
         perror(nomeArquivo);
+        fprintf(stderr, "[ERRO] Não foi possivel deletar o arquivo.\n");
         return;
     } 
     

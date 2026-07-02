@@ -20,7 +20,7 @@ static void imprimir_menu_medicos() {
         "3. Pesquisar médico\n"
         "4. Modificar médico\n"
         "5. Remover médico\n"
-        "6. Voltar\n",
+        "0. Voltar\n",
     qtdMedicos);
 }
 
@@ -266,6 +266,5 @@ void modulo_medicos() {
             printf("[ERRO] Opção inválida. Tente novamente...\n\n");
             break;
         }
-    } while (opcao != '6');
-    // Se a opção 6 for selecionada quebramos o laço
+    } while (opcao != '0');
 }

@@ -17,6 +17,9 @@
 // Posteriormente podemos adicionar uma ASCII art aqui
 void imprimir_menu();
 
+// imprime o menu de ajuda do programa
+void imprimir_menu_ajuda();
+
 // Imprime o caracatere '>' para servir de cursor no terminal
 void imprimir_cursor();
 
@@ -58,7 +61,7 @@ void* ler_arquivo(const char *nomeArquivo, int *ptrQuantidadeDados, int *ptrCapa
 void gravar_arquivo(const char *nomeArquivo, int quantidadeDados, void *vetorDados, size_t tamanhoDado);
 
 // Tenta excluir o arquivo passado como argumento
-void remover_arquivo(char *nomeArquivo);
+void remover_arquivo(const char *nomeArquivo);
 
 /**
  * Remove um item de um vetor genérico mantendo a ordenação.
