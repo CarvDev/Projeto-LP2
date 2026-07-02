@@ -11,7 +11,7 @@ int ultimaIdMedico = 0;    // Para controle numérico das IDs
 const char caminhoArqMedicos[] = "dados/medicos.bin";
 
 static void imprimir_menu_medicos() {
-    printf("------ DOUTORES ------\n"
+    printf("------ MÉDICOS ------\n"
         "[Médicos Cadastrados: %d]\n\n"
 
         "[Digite a opção desejada]\n"

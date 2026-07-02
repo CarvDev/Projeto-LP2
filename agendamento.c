@@ -126,12 +126,13 @@ static void cadastrar_agendamento(Agendamento *lista) {
     printf("---- NOVO AGENDAMENTO ----\n");
 
     // ID (definida automaticamente)
-    formatar_id(qtdAgendamentos + 1, 'A', novo->id, sizeof(novo->id));
+    formatar_id(ultimaIdAgendamento + 1, 'A', novo->id, sizeof(novo->id));
 
     // Data 
     Horario horario = solicitar_horario();
     novo->timestamp = obter_timestamp(horario);
 
+    // Médico
     while(1) {
         solicitar_id_inteligente(novo->idPaciente, 'P', sizeof(novo->idPaciente), "ID do Paciente: ");
         if (pesquisar_paciente(0, qtdPacientes - 1, novo->idPaciente) == -1) {
@@ -139,6 +140,7 @@ static void cadastrar_agendamento(Agendamento *lista) {
         } else break;
     }
 
+    // Paciente
     while (1) {
         solicitar_id_inteligente(novo->idMedico, 'M', sizeof(novo->idMedico), "ID do Médico: ");
         if (pesquisar_medico(0, qtdMedicos - 1, novo->idMedico) == -1) {
@@ -460,8 +462,7 @@ void gravar_arquivo_agendamentos() {
 void ler_arquivo_agendamentos() {
     FILE *arquivo = fopen(caminhoArqAgendamentos, "rb");
     if (arquivo == NULL) {
-        fprintf(stderr, "[AVISO] Não foi possível ler o arquivo '%s'\n.", caminhoArqAgendamentos);
-        printf("[Começando sem dados deste módulo]\n");
+        fprintf(stderr, "[AVISO] Não foi possível ler o arquivo '%s' (Começando sem dados deste Módulo)\n", caminhoArqAgendamentos);
         return; 
     }
 

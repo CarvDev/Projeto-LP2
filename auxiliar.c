@@ -5,15 +5,19 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "auxiliar.h"
+#include "agendamento.h"
+#include "medico.h"
+#include "paciente.h"
 
 void imprimir_menu()
 {
     printf("------ HOSPITAL ------\n"
            "Digite a opção desejada:\n"
-           "1. Gerenciar pacientes\n"
-           "2. Gerenciar doutores\n"
-           "3. Gerenciar agendamentos\n"
-           "4. Sair do sistema\n");
+           "1. Gerenciar pacientes (cadastros: %d)\n"
+           "2. Gerenciar médicos (cadastros: %d)\n"
+           "3. Gerenciar agendamentos (cadastros: %d)\n"
+           "4. Sair do sistema\n",
+        qtdPacientes, qtdMedicos, qtdAgendamentos);
 }
 
 void imprimir_cursor() { printf("> "); }
@@ -78,8 +82,7 @@ void* ler_arquivo(const char *nomeArquivo, int *ptrQuantidadeDados, int *ptrCapa
     FILE *arquivo = fopen(nomeArquivo, "rb");
     if (arquivo == NULL) {
         // Em caso de falha de abertura, a quantidade é zerada e retorna-se NULL para indicar ausência de dados
-        fprintf(stderr, "[AVISO] Não foi possível ler o arquivo '%s'\n.", nomeArquivo);
-        printf("[Começando sem dados deste Módulo]\n");
+        fprintf(stderr, "[AVISO] Não foi possível ler o arquivo '%s' (Começando sem dados deste Módulo)\n", nomeArquivo);
         *ptrQuantidadeDados = 0;
         return NULL;
     }

@@ -35,7 +35,6 @@ void imprimir_paciente(Paciente paciente) {
 
 Paciente cadastrar_paciente() {
     Paciente paciente;
-    int dadosLidos = 0;
 
     printf("---- NOVO PACIENTE ----\n");
 
@@ -301,7 +300,6 @@ static void editar_dados_paciente(int indice) {
 void modulo_pacientes() {
     char opcao = 0;
     char idPesquisa[6];
-    int rawId;
     int indicePaciente;
 
     // Iniciando interação com usuário
@@ -340,7 +338,7 @@ void modulo_pacientes() {
 
         case '3':
             // Pesquisar
-            solicitar_id_inteligente(idPesquisa, 'M', sizeof(idPesquisa), "\n[Informe a ID do paciente a ser pesquisado]\n>  ");
+            solicitar_id_inteligente(idPesquisa, 'P', sizeof(idPesquisa), "\n[Informe a ID do paciente a ser pesquisado]\n>  ");
             indicePaciente = pesquisar_paciente(0, qtdPacientes - 1, idPesquisa);
 
             // Caso de erro

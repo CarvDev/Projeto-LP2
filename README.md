@@ -14,7 +14,7 @@ Construir um sistema de tema livre com os conhecimentos obtidos em LP1 e ir apri
 **Recursos previstos:**
 
 * Gerenciar pacientes (Cadastrar, Visualizar, Editar, Remover)
-* Gerenciar doutores (Cadastrar, Visualizar, Editar, Remover)
+* Gerenciar médicos (Cadastrar, Visualizar, Editar, Remover)
 * Gerenciar agendamentos (Cadastrar, Visualizar, Editar, Remover)
 
 ## Cronograma de Implementação (Roadmap):
@@ -31,4 +31,4 @@ Construir um sistema de tema livre com os conhecimentos obtidos em LP1 e ir apri
 
 #### [ ] **Fase 3: Persistência de Dados (Arquivos)**
 * Implementação de leitura e escrita em **Arquivos**.
-* Armazenamento permanente dos registros de pacientes, doutores e agendamentos para que os dados não sejam perdidos ao fechar o programa.
+* Armazenamento permanente dos registros de pacientes, médicos e agendamentos para que os dados não sejam perdidos ao fechar o programa.

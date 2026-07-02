@@ -29,7 +29,7 @@ void imprimir_medico(Medico medico);
 */ 
 int pesquisar_medico(int inicio, int fim, char idDesejada[]);
 
-// Agrupa a execução das principais funções de doutores
+// Agrupa a execução das principais funções de médicos
 void modulo_medicos();
 
 #endif

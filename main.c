@@ -44,7 +44,7 @@ int main()
             break;
 
         case '2':
-            // Gerenciar doutores
+            // Gerenciar médicos
             modulo_medicos();
             break;
 
