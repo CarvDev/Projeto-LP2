@@ -108,7 +108,17 @@ int main()
         free(medicos);
         medicos = NULL; 
     }
+
     if (listaAgendamentos != NULL) {
+        Agendamento *atual = listaAgendamentos -> prox;
+        Agendamento *proximo;
+        
+        while (atual != NULL) {
+            proximo = atual->prox;
+            free(atual);
+            atual = proximo;
+        }
+
         free(listaAgendamentos);
         listaAgendamentos = NULL;
     }

@@ -20,6 +20,7 @@ typedef struct {
     int ano;
 } Horario;
 
+// Agrupa a execução das principais funções de agendamentos
 void modulo_agendamentos();
 
 // Exportando as variáveis globais
