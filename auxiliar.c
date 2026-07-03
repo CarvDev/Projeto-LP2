@@ -51,7 +51,7 @@ void imprimir_menu_ajuda() {
         "\nComandos CLI:\n"
         " - '--help' para exibir esta tela novamente.\n"
         " - '--reset' para apagar os arquivos de dados.\n"
-        " - '--export' para imprimir todos os dados registrados, possibilitando exportação\n");
+        " - '--export' para imprimir todos os dados registrados, possibilitando exportação.\n");
 }
 
 void imprimir_cursor() { printf("> "); }
