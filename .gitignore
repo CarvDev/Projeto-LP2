@@ -4,6 +4,8 @@
 ### Custom ###
 # Para os arquivos de dados do projeto
 dados/*
+.dados/*
+hospital
 
 ### C ###
 # Prerequisites
