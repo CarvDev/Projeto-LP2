@@ -133,7 +133,7 @@ static void cadastrar_agendamento(Agendamento *lista) {
     novo->timestamp = obter_timestamp(horario);
 
     // Médico
-    while(1) {
+    while (1) {
         solicitar_id_inteligente(novo->idPaciente, 'P', sizeof(novo->idPaciente), "ID do Paciente: ");
         if (pesquisar_paciente(0, qtdPacientes - 1, novo->idPaciente) == -1) {
             fprintf(stderr, "[ERRO] O paciente não existe. Por favor, tente novamente...\n");

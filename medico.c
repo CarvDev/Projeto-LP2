@@ -31,6 +31,9 @@ void imprimir_medico(Medico medico) {
     printf("  Especialização: %s\n", medico.especializacao);
 }
 
+// Protótipo para utilizar na função de cadastro
+static void editar_dados_medico(Medico *medico);
+
 Medico cadastrar_medico() {
     Medico medico;
 
@@ -79,7 +82,7 @@ Medico cadastrar_medico() {
     imprimir_cursor();
     char resposta = obter_opcao();
     
-    if (maiusculo(resposta) == 'N') return cadastrar_medico();
+    if (maiusculo(resposta) == 'N') editar_dados_medico(&medico); 
 
     (qtdMedicos)++;
     (ultimaIdMedico)++;
@@ -111,12 +114,12 @@ int pesquisar_medico(int inicio, int fim, char idDesejada[]) {
 }
 
 // Sub-menu específico para editar os dados de um médico sem afetar a ID
-static void editar_dados_medico(int indice) {
+static void editar_dados_medico(Medico *medico) {
     char opcao;
 
     do {
         printf("\n--- EDITANDO MÉDICO ---\n");
-        imprimir_medico(medicos[indice]);
+        imprimir_medico(*medico);
         
         printf("\n[O que deseja alterar?]\n");
         printf("1. Nome\n");
@@ -131,8 +134,8 @@ static void editar_dados_medico(int indice) {
             case '1':
                 while (1) {
                     printf("Novo Nome: ");
-                    if (fgets(medicos[indice].nome, sizeof(medicos[indice].nome), stdin)) {
-                        remover_quebra_linha(medicos[indice].nome);
+                    if (fgets(medico->nome, sizeof(medico->nome), stdin)) {
+                        remover_quebra_linha(medico->nome);
                         break;
                     }
                     fprintf(stderr, "[ERRO] Tente novamente\n");
@@ -143,8 +146,8 @@ static void editar_dados_medico(int indice) {
             case '2':
                 while (1) {
                     printf("Novo CRM: ");
-                    if (fgets(medicos[indice].crm, sizeof(medicos[indice].crm), stdin)) {
-                        remover_quebra_linha(medicos[indice].crm);
+                    if (fgets(medico->crm, sizeof(medico->crm), stdin)) {
+                        remover_quebra_linha(medico->crm);
                         break;
                     }
                     fprintf(stderr, "[ERRO] Tente novamente\n");
@@ -155,8 +158,8 @@ static void editar_dados_medico(int indice) {
             case '3':
                 while (1) {
                     printf("Nova Especialização: ");
-                    if (fgets(medicos[indice].especializacao, sizeof(medicos[indice].especializacao), stdin)) {
-                        remover_quebra_linha(medicos[indice].especializacao);
+                    if (fgets(medico->especializacao, sizeof(medico->especializacao), stdin)) {
+                        remover_quebra_linha(medico->especializacao);
                         break;
                     }
                     fprintf(stderr, "[ERRO] Tente novamente\n");
@@ -239,8 +242,8 @@ void modulo_medicos() {
                 break;
             }
 
-            // Se encontrou, chama o sub-menu passando a posição no vetor
-            editar_dados_medico(indiceMedico);
+            // Se encontrou, chama o sub-menu passando o ponteiro para o médico
+            editar_dados_medico(&medicos[indiceMedico]);
             break;
 
         case '5':

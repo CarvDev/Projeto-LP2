@@ -43,6 +43,7 @@ void imprimir_menu_ajuda() {
         " - (0) é sempre a opção parão para voltar ao menu anterior.\n"
         " - Se o ano for omitido ao informar uma data, o sistema assume o ano atual.\n"
         " - Para tratamento de tipos sanguíneos, gêneros e menus [s/n], o sistema converterá os caracteres minúsculos em maiúsculos.\n"
+        " - Sempre que houver um menu [S/n] o sistema assume qualquer resposta diferente de 'n' (inclusive um ENTER vazio) como sim.\n"
 
         "\nPersistência de dados:\n"
         " - Os dados são gravados em arquivos no diretório 'dados/' quando o programa salva as alterações ou é encerrado corretamente.\n"

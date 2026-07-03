@@ -24,6 +24,9 @@ static void imprimir_menu_pacientes() {
     qtdPacientes);
 }
 
+// Protótipo para utilizar na função de cadastro
+static void editar_dados_paciente(Paciente *paciente);
+
 void imprimir_paciente(Paciente paciente) {
     printf("%s:\n", paciente.id);
     printf("  Nome: %s\n", paciente.nome);
@@ -143,7 +146,7 @@ Paciente cadastrar_paciente() {
     printf("[Os dados conferem? (S/n)]\n");
     imprimir_cursor();
     char resposta = obter_opcao();
-    if (maiusculo(resposta) == 'N') return cadastrar_paciente();
+    if (maiusculo(resposta) == 'N') editar_dados_paciente(&paciente);
 
     (qtdPacientes)++;
     (ultimaIdPaciente)++;
@@ -175,12 +178,12 @@ int pesquisar_paciente(int inicio, int fim, char idDesejada[]) {
 }
 
 // Sub-menu específico para editar os dados de um paciente sem afetar a ID
-static void editar_dados_paciente(int indice) {
+static void editar_dados_paciente(Paciente *paciente) {
     char opcao;
 
     do {
         printf("\n--- EDITANDO PACIENTE ---\n");
-        imprimir_paciente(pacientes[indice]);
+        imprimir_paciente(*paciente);
 
         printf("\n[O que deseja alterar?]\n");
         printf("1. Nome\n");
@@ -197,8 +200,8 @@ static void editar_dados_paciente(int indice) {
             case '1':
                 while (1) {
                     printf("Novo Nome: ");
-                    if (fgets(pacientes[indice].nome, sizeof(pacientes[indice].nome), stdin)) {
-                        remover_quebra_linha(pacientes[indice].nome);
+                    if (fgets(paciente->nome, sizeof(paciente->nome), stdin)) {
+                        remover_quebra_linha(paciente->nome);
                         break;
                     }
                     fprintf(stderr, "[ERRO] Tente novamente\n");
@@ -209,7 +212,7 @@ static void editar_dados_paciente(int indice) {
             case '2':
                 while (1) {
                     printf("Nova Idade: ");
-                    if (scanf(" %d", &pacientes[indice].idade) == 1) break;
+                    if (scanf(" %d", &paciente->idade) == 1) break;
                     limpar_buffer();
                     fprintf(stderr, "[ERRO] Tente novamente\n");
                 }
@@ -223,9 +226,9 @@ static void editar_dados_paciente(int indice) {
                     printf("Novo Gênero (F/M): ");
                     if (fgets(generoTemp, sizeof(generoTemp), stdin)) {
                         remover_quebra_linha(generoTemp);
-                        pacientes[indice].genero = maiusculo(generoTemp[0]);
+                        paciente->genero = maiusculo(generoTemp[0]);
 
-                        if (pacientes[indice].genero != 'M' && pacientes[indice].genero != 'F') {
+                        if (paciente->genero != 'M' && paciente->genero != 'F') {
                             fprintf(stderr, "[ERRO] Gênero Inválido. Por favor, tente novamente\n");
                             continue;
                         }
@@ -239,7 +242,7 @@ static void editar_dados_paciente(int indice) {
             case '4':
                 while (1) {
                     printf("Novo Peso (kg): ");
-                    if (scanf(" %f", &pacientes[indice].peso) == 1) break;
+                    if (scanf(" %f", &paciente->peso) == 1) break;
                     limpar_buffer();
                     fprintf(stderr, "[ERRO] Tente novamente\n");
                 }
@@ -274,7 +277,7 @@ static void editar_dados_paciente(int indice) {
 
                         if (tamString > 2 && tipoSanguineoTemp[1] != 'B') goto erro;
 
-                        strcpy(pacientes[indice].tipoSanguineo, tipoSanguineoTemp);
+                        strcpy(paciente->tipoSanguineo, tipoSanguineoTemp);
                         break;
 
                         erro:
@@ -361,7 +364,7 @@ void modulo_pacientes() {
                 break;
             }
 
-            editar_dados_paciente(indicePaciente);
+            editar_dados_paciente(&pacientes[indicePaciente]);
             break;
 
         case '5':
