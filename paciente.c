@@ -316,13 +316,16 @@ void modulo_pacientes() {
         case '1':
             // Cadastrar
             if (qtdPacientes >= capacidadePacientes) {
+                // Salva a capacidade atual para permitir reversão segura em caso de erro
+                int capacidadeAnterior = capacidadePacientes;
+
                 // Se for a primeira vez, aloca 2 espaços. Se não, dobra o tamanho atual.
                 capacidadePacientes = (capacidadePacientes == 0) ? 2 : capacidadePacientes * 2;
                 
                 Paciente *temp = realloc(pacientes, capacidadePacientes * sizeof(Paciente));
                 if (temp == NULL) {
                     fprintf(stderr, "[ERRO CRÍTICO] Falha ao alocar memória!\n");
-                    capacidadePacientes /= 2; // Reverte a capacidade em caso de erro
+                    capacidadePacientes = capacidadeAnterior; // Reverte a capacidade em caso de erro
                     break;
                 }
                 pacientes = temp; // Atualiza o ponteiro com a nova memória

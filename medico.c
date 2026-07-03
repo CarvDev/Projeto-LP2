@@ -193,13 +193,16 @@ void modulo_medicos() {
         switch (opcao) {
         case '1':
             if (qtdMedicos >= capacidadeMedicos) {
+                // Salva a capacidade atual para permitir reversão segura em caso de erro
+                int capacidadeAnterior = capacidadeMedicos;
+
                 // Se for a primeira vez, aloca 2 espaços. Se não, dobra o tamanho atual.
                 capacidadeMedicos = (capacidadeMedicos == 0) ? 2 : capacidadeMedicos * 2;
                 
                 Medico *temp = realloc(medicos, capacidadeMedicos * sizeof(Medico));
                 if (temp == NULL) {
                     fprintf(stderr, "[ERRO CRÍTICO] Falha ao alocar memória!\n");
-                    capacidadeMedicos /= 2; // Reverte a capacidade em caso de erro
+                    capacidadeMedicos = capacidadeAnterior; // Reverte a capacidade em caso de erro
                     break;
                 }
                 medicos = temp; // Atualiza o ponteiro com a nova memória

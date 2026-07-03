@@ -332,6 +332,10 @@ void modulo_agendamentos() {
         switch (opcao) {
         case '1':
             // Cadastrar
+            if (qtdMedicos < 1 || qtdPacientes < 1) {
+                fprintf(stderr, "[ERRO] Para cadastrar um agendamento é necessário haver pelo menos 1 médico e 1 paciente no sistema\n");
+                break;
+            }
             cadastrar_agendamento(listaAgendamentos);
             break;
 
