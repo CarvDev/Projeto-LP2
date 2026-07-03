@@ -32,6 +32,9 @@ typedef struct {
 // Agrupa a execução das principais funções de agendamentos
 void modulo_agendamentos();
 
+// Imprime os dados do agendamento passado como argumento
+void imprimir_agendamento(Agendamento *agendamento);
+
 /*
  * Serializa a lista encadeada e o estado dos contadores globais para o disco.
  * Oculta os ponteiros (*prox, *anterior) usando uma struct espelho internamente, 
@@ -47,6 +50,9 @@ void gravar_arquivo_agendamentos(void);
  * a ler de um por um.
  */
 void ler_arquivo_agendamentos(void);
+
+// Inicializando a cabeça da lista encadeada dos agendamentos
+void inicializar_lista_agendamentos();
 
 // Exportando as variáveis globais
 extern int ultimaIdAgendamento;

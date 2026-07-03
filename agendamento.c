@@ -501,3 +501,12 @@ void ler_arquivo_agendamentos() {
 
     fclose(arquivo);
 }
+
+void inicializar_lista_agendamentos() {
+    listaAgendamentos = calloc(1, sizeof(Agendamento));
+    if (listaAgendamentos == NULL) {
+        fprintf(stderr, "[ERRO CRÍTICO] Não foi possível alocar memória para os agendamentos.\n"
+            "[Saindo do sistema...]\n");
+        exit(1);
+    }
+}

@@ -69,6 +69,9 @@ void remover_arquivo(const char *nomeArquivo);
  */
 void *remover_item(void *vetor, int *tamanhoVetor, size_t tamanhoDado, int indiceItem);
 
+// Encapsula a lógica de leitura de todos os arquivos
+void carregar_dados();
+
 /* Função biwise que torna o caratere recebido maiúsculo.
  * Funciona igual a função toupper() e retorna o mesmo caractere em
    caso de não ser uma letra minúscula

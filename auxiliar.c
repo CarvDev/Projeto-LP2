@@ -50,7 +50,8 @@ void imprimir_menu_ajuda() {
 
         "\nComandos CLI:\n"
         " - '--help' para exibir esta tela novamente.\n"
-        " - '--reset' para apagar os arquivos de dados.\n");
+        " - '--reset' para apagar os arquivos de dados.\n"
+        " - '--export' para imprimir todos os dados registrados, possibilitando exportação\n");
 }
 
 void imprimir_cursor() { printf("> "); }
@@ -217,6 +218,12 @@ void *remover_item(void *vetor, int *tamanhoVetor, size_t tamanhoDado, int indic
 
     (*tamanhoVetor)--;
     return vetor;
+}
+
+void carregar_dados() {
+    pacientes = ler_arquivo(caminhoArqPacientes, &qtdPacientes, &capacidadePacientes, sizeof(Paciente));
+    medicos = ler_arquivo(caminhoArqMedicos, &qtdMedicos, &capacidadeMedicos, sizeof(Medico));
+    ler_arquivo_agendamentos(); // A função de carregamento de agendamentos é exclusiva
 }
 
 char maiusculo (char c) {

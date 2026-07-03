@@ -381,7 +381,7 @@ void modulo_pacientes() {
             printf("[%s Removido]\n", idPesquisa);
             break;
 
-        case '6':
+        case '0':
             // Voltar
             break;
 

@@ -6,7 +6,6 @@
 #include "paciente.h"
 #include "medico.h"
 
-
 int main(int argc, char *argv[])
 {
     // Tratamento dos argumentos cli
@@ -31,6 +30,33 @@ int main(int argc, char *argv[])
             return 0;
         }
 
+        // export
+        if (!strcmp("--export", argv[1])) {
+            inicializar_lista_agendamentos();
+            carregar_dados();
+
+            printf("--- MÉDICOS ---\n");
+            for (int i = 0; i < qtdMedicos; i++) {
+                imprimir_medico(medicos[i]);
+            }
+            printf("\n");
+
+            printf("--- PACIENTES ---\n");
+            for (int i = 0; i < qtdPacientes; i++) {
+                imprimir_paciente(pacientes[i]);
+            }
+            printf("\n");
+
+            printf("--- AGENDAMENTOS ---\n");
+            Agendamento *atual = listaAgendamentos; 
+            while(atual->prox != NULL) {
+                atual = atual->prox;
+                imprimir_agendamento(atual);
+            }
+            printf("\n");
+            return 0;
+        }
+
         // Caso de erro
         fprintf(stderr, "[ERRO] '%s' não é um argumento válido\n", argv[1]);
         return 1;
@@ -38,22 +64,11 @@ int main(int argc, char *argv[])
 
     // Funcionamento padrão (sem argumentos cli)
     char opcao = 0;
+    inicializar_lista_agendamentos();
     
-    // Inicializando a cabeça da lista encadeada dos agendamentos
-    listaAgendamentos = calloc(1, sizeof(Agendamento));
-    if (listaAgendamentos == NULL) {
-        fprintf(stderr, "[ERRO CRÍTICO] Não foi possível alocar memória para os agendamentos.\n"
-            "[Saindo do sistema...]\n");
-        return 1;
-    }
-
     // Carregando dados dos arquivos
     printf("[Carregando Dados Anteriores...]\n");
-
-    // TODO: implementar alocação dinâmica para os pacientes
-    pacientes = ler_arquivo(caminhoArqPacientes, &qtdPacientes, &capacidadePacientes, sizeof(Paciente));
-    medicos = ler_arquivo(caminhoArqMedicos, &qtdMedicos, &capacidadeMedicos, sizeof(Medico));
-    ler_arquivo_agendamentos(); // A função de carrgeamento de agendamentos é exclusiva
+    carregar_dados();
 
     // Sincroniza os contadores de ID baseando-se no último registro recuperado
     if (qtdMedicos > 0) ultimaIdMedico = atoi(medicos[qtdMedicos - 1].id + 1);
