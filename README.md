@@ -1,34 +1,57 @@
-# Projeto-LP2
-Projeto em dupla para a disciplina de **Linguagem de Programação 2** do curso de **Ciência da Computação - UESC**
+# C Hospital CRUD
 
-## Autores:
-* **Arthur de Carvalho** ([@CarvDev](https://github.com/CarvDev))
-* **Rafael Mota** ([@rafaelmotaf](https://github.com/rafaelmotaf))
+A compact, educational CRUD system for a hospital management scenario developed for the "Programming Language II" discipline at UESC's Computer Science Course.
 
-## Proposta:
-Construir um sistema de tema livre com os conhecimentos obtidos em LP1 e ir aprimorando-o conforme os novos conhecimentos obtidos em LP2.
+Versão em Português 🇧🇷: [README-pt_BR.md](README-pt_BR.md).
 
-## Tema Escolhido:
-**Sistema CRUD para hospital**. 
+![Screenshot](screenshot.png)
 
-**Recursos previstos:**
+**Authors:**
+- Arthur de Carvalho ([CarvDev](https://github.com/CarvDev))
+- Rafael Mota ([rafaelmotafreitas](https://github.com/rafaelmotafreitas))
 
-* Gerenciar pacientes (Cadastrar, Visualizar, Editar, Remover)
-* Gerenciar médicos (Cadastrar, Visualizar, Editar, Remover)
-* Gerenciar agendamentos (Cadastrar, Visualizar, Editar, Remover)
+**Objective:**
+Provide a clear, well-structured implementation in C that demonstrates core systems programming skills: modular design, dynamic data structures, memory management, and file-based persistence. The project is intended both as a learning exercise and as a showcase of the authors' C-language proficiency.
 
-## Cronograma de Implementação (Roadmap):
-#### [X] Fase 0: Definição de tema e escopo incial
-* Contrução de sistema restrito ao escopo de LP1
+**Key Features:**
+- Patient management: create, view, edit, remove records.
+- Doctor management: create, view, edit, remove records.
+- Appointment scheduling: create, view, edit, remove appointments linking patients and doctors.
+- Console-based user interface with modularized code and clear separation between data logic and UI.
 
-#### [ ] **Fase 1: Estrutura Dinâmica**
-* Implementação de **Tipos de Dados Dinâmicos** para a gestão de pacientes e médicos em memória.
+**Tech Stack & Skills Demonstrated:**
+- Language: C (ISO C, idiomatic use of pointers, structs and arrays).
+- Build: `Makefile` with simple targets to build and run the program using `gcc`.
+- Memory management: low level memory manipulation with `memmove()` and dynamic memory allocation (`malloc`/`free`), with doubling strategy and careful lifetime handling.
+- Data structures: custom linked lists and dynamic arrays to store records in memory.
+- Recursion: recursive implementation of the Binary Search algorithm.
+- CLI arguments: quick data export/reset and help menu on terminal.    
+- Bitwise operations: converting lowercase characters into uppercase without the `toupper()` function.
+- Pointers: efficient data manipulation, pointer arithmetic and generic functions with `void*` data type.  
+- System calls: directory creation function defined with conditional compilation for portability on both Windows and POSIX systems.
+- Timestamp management: for efficiently handling time oriented operations, such as appointments.
+- Error handling: input buffer cleaning, string normalization and memory safety.
+- File I/O: persistent storage using standard C file APIs (`fopen`, `fread`, `fwrite`, `fclose`).
+- Modularization: split across headers and sources (`paciente.c/.h`, `medico.c/.h`, `agendamento.c/.h`, `auxiliar.c/.h`) to demonstrate API design in C.
 
-#### [ ] **Fase 2: Modularização e Bibliotecas**
-* Organização do código em módulos específicos.
-* Criação de **Bibliotecas** próprias para separação da lógica de negócio (CRUD) da interface de usuário.
-* Uso de **Passagem de Parâmetros** eficiente e funções/procedimentos bem definidos.
+**Repository Structure (high level):**
+- `main.c` — program entry and menu loop
+- `paciente.c` / `paciente.h` — patient CRUD logic
+- `medico.c` / `medico.h` — doctor CRUD logic
+- `agendamento.c` / `agendamento.h` — appointment logic linking patients and doctors
+- `auxiliar.c` / `auxiliar.h` — helper utilities and I/O helpers
+- `Makefile` — build and run targets
+- `dados/` — directory intended for persisted data files
 
-#### [ ] **Fase 3: Persistência de Dados (Arquivos)**
-* Implementação de leitura e escrita em **Arquivos**.
-* Armazenamento permanente dos registros de pacientes, médicos e agendamentos para que os dados não sejam perdidos ao fechar o programa.
+**Build & Run:**
+1. Build: run `make` (requires `gcc`)
+2. Run: `./hospital` 
+3. Show help menu: `./hospital --help`
+4. Reset data: `./hospital --reset`
+5. Export data: `./hospital --export`
+
+**Compatibility:**
+The project is designed to be compatible with Windows, GNU/Linux and macOS/BSD operating systems.
+
+**License & Contribution:**
+This project is licensed under MIT, as stated in the `LICENSE` file. Contributions and improvements are currently not expected, as this project is considered finished.
